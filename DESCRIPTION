@@ -1,12 +1,18 @@
 Package: JefferysRUtils
 Type: Package
-Title: What the Package Does (Title Case)
+Title: My back of tricks for R code
 Version: 0.0.1
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Stuart R. Jefferys
+Maintainer: Stuart R. Jefferys <srj@unc.edu>
+Description: A collection of utilites that I use in R code. Each is to samll to
+   warrent their own package, they are relatively unrelated, and depending on
+   them all as separate utility packages is to many dependencies for now. May
+   split some out later, so be warned.
+License: MIT + file LICENSE
 LazyData: TRUE
-Imports: futile.logger
+Imports:
+   futile.logger,
+   utils
 Suggests:
-    testthat
+   testthat
 RoxygenNote: 5.0.1
