@@ -14,17 +14,18 @@
 #'
 #' @param x A list
 #' @param y Another list
-#' @param keepOrder How to order list when dropping duplicate elements from
-#'   \code{y} If FALSE, the default, just drops elements from \code{x} with the
+#' @param keepOrder How to order the list when duppliates occur: by deafult
+#'  this is FALSE, with duplicates dropped from \code{x} when they have the
 #'   same name as an element in \code{y}, before appending \code{y}. If TRUE,
 #'   preserves the order of element names as much as possible, by replacing the
 #'   value of duplicated element names with those from \code{y}, then appending
 #'   \code{y} with duplicated elements dropped.
+#' @param ... Required for generic method. Not used.
 #'
 #' @return A list consisting of all elements from \code{x} not also in \code{y},
 #'   and then all elements in \code{y}, or
 #' @export
-merge.list <- function(x, y, keepOrder= FALSE) {
+merge.list <- function(x, y, keepOrder= FALSE, ...) {
    # x is list by dispatch
    if ( ! is.list( x )) stop( "Can't merge lists; 'x' is not a list." )
    if ( ! is.list( y )) stop( "Can't merge lists; 'y' is not a list." )
@@ -137,6 +138,7 @@ merge.list <- function(x, y, keepOrder= FALSE) {
 #'
 #' @name sayInfo
 #' @import futile.logger
+#' @importFrom utils packageName
 NULL
 
 #' @describeIn sayInfo Print a message to specified loggers with
@@ -213,6 +215,7 @@ sayFatal <- function( msg, ...,
 }
 
 #' @export
+#' @rdname sayInfo
 OFF <- c(OFF= 0L)
 
 #' Initialize default loggers
@@ -229,7 +232,7 @@ OFF <- c(OFF= 0L)
 #'   where \var{package} is guessed using \code{link{packageName()}}.
 #' @param fileLevel Only messages at least this important will be saved to the
 #'   log file, by default "WARN".
-#' @param fileLevel Only messages at least this important will be printed to the
+#' @param consoleLevel Only messages at least this important will be printed to the
 #'   console, by default "INFO".
 #' @return Nothing, called only for its side effect of initializing loggers.
 #'
@@ -243,6 +246,8 @@ OFF <- c(OFF= 0L)
 #'   # Logged to console and file.
 #'   sayWarn("This conversation is being monitored.")
 #' }
+#' @import futile.logger
+#' @importFrom utils packageName
 #' @export
 initSayLoggers <- function( file= packageName() %p% ".log",
                             fileLevel= WARN, consoleLevel= INFO

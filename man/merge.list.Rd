@@ -4,7 +4,7 @@
 \alias{merge.list}
 \title{Merge two lists}
 \usage{
-\method{merge}{list}(x, y, keepOrder = FALSE)
+\method{merge}{list}(x, y, keepOrder = FALSE, ...)
 }
 \arguments{
 \item{x}{A list}
@@ -17,6 +17,8 @@ same name as an element in \code{y}, before appending \code{y}. If TRUE,
 preserves the order of element names as much as possible, by replacing the
 value of duplicated element names with those from \code{y}, then appending
 \code{y} with duplicated elements dropped.}
+
+\item{...}{Required for generic method. Not used.}
 }
 \value{
 A list consisting of all elements from \code{x} not also in \code{y},

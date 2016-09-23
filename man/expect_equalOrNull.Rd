@@ -7,28 +7,28 @@
 expect_equalOrNull(got, want, label = NULL, info = NULL, ...)
 }
 \arguments{
-\item{got}{The object to test}
+\item{got}{The object to test.}
 
-\item{want}{The expected value, may be \code{NULL}}
+\item{want}{The expected value, may be \code{NULL}.}
 
-\item{label}{Object label}
+\item{label}{Object label.}
 
-\item{info}{Extra info}
+\item{info}{Extra info.}
 
-\item{...}{Extra parameters passed to \code{\link{all.equal}}}
+\item{...}{Extra parameters passed to \code{\link{all.equal}}.}
 }
 \value{
 Called only for its side effects during testing.
 }
 \description{
-General test fixture - extend expect_equal to support \code{NULL}.
+This general test fixture extends \code{expect_equal} to support \code{NULL}.
 }
 \examples{
 \dontrun{
 ### Pass
 expect_equalOrNull( 1, 1 )
-expect_equalOrNull( list(a=1,b=2), list(b=2, a=1))
-x <- list(a=1, b=2)["c"]
+expect_equalOrNull( list( a= 1,b= 2 ), list( b= 2, a= 1 ))
+x <- list( a= 1, b= 2)["c"]
 expect_equalOrNull( x, NULL )
 
 ### Fail

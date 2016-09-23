@@ -14,7 +14,7 @@ where \var{package} is guessed using \code{link{packageName()}}.}
 \item{fileLevel}{Only messages at least this important will be saved to the
 log file, by default "WARN".}
 
-\item{fileLevel}{Only messages at least this important will be printed to the
+\item{consoleLevel}{Only messages at least this important will be printed to the
 console, by default "INFO".}
 }
 \value{
