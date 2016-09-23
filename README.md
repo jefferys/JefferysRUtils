@@ -1,5 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+[![Travis-CI Build Status](https://travis-ci.org/.svg?branch=master)](https://travis-ci.org/)
+
 JefferysRUtils
 ==============
 
@@ -9,7 +11,7 @@ Currently there are three main groupings of functions:
 
 -   String utilities
 -   List utilities
--   Logging utilities for use with the [`futile.logger`](https://CRAN.R-project.org/package=futile.logger) package.
+-   Logging utilities for use with the [`futile.logger`](https://CRAN.R-project.org/package=futile.logger) package
 
 ### String utilities
 
