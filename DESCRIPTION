@@ -10,6 +10,7 @@ Description: A collection of utilites that I use in R code. Each is to samll to
    split some out later, so be warned.
 License: MIT + file LICENSE
 LazyData: TRUE
+URL: http://github.com/jefferys/JefferysRUtils
 Imports:
    futile.logger,
    utils
