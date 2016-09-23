@@ -1,4 +1,4 @@
 library(testthat)
-library(JefferysUtils)
+library(JefferysRUtils)
 
-test_check("JefferysUtils")
+test_check("JefferysRUtils")
