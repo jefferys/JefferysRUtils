@@ -12,7 +12,7 @@
 #'
 #' @param x A list
 #' @param y Another list
-#' @param keepOrder How to order the list when duppliates occur: by deafult
+#' @param keepOrder How to order the list when duplicates occur: by default
 #'  this is FALSE, with duplicates dropped from \code{x} when they have the
 #'   same name as an element in \code{y}, before appending \code{y}. If TRUE,
 #'   preserves the order of element names as much as possible, by replacing the
