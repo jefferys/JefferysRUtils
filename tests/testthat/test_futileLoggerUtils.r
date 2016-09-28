@@ -119,9 +119,31 @@ describe( "Split logging to console + file by default", {
       expect_output( sayDebug( message ), wantRE, perl= TRUE )
       expect_false(file.exists(file))
    })
+   it( "Logs to only one if level restricts, if set as string", {
+      initSayLoggers(file=file, fileLevel = "INFO", consoleLevel= "DEBUG" )
+      message <- "Testing split file and console logging."
+      messageRE <- "\\Q" %p% message %p% "\\E"
+      wantRE <- "(?s)^DEBUG" %pp% dateRE %pp% messageRE %p% "$"
+      expect_false(file.exists(file))
+      expect_output( sayDebug( message ), wantRE, perl= TRUE )
+      expect_false(file.exists(file))
+   })
    it( "Respects logging level changes", {
       flog.threshold(INFO, name=packageName() %p% ".file")
       flog.threshold(ERROR, name=packageName() %p% ".console")
+      message <- "Testing split file and console logging with rest log levels."
+      messageRE <- "\\Q" %p% message %p% "\\E"
+      expect_false(file.exists(file))
+      expect_silent( sayInfo( message ))
+      expect_true(file.exists(file))
+      gotText <- paste0(readLines(file))
+      wantTextRE <- "(?s)^INFO" %pp% dateRE %pp% messageRE %p% "$"
+      expect_match( gotText, wantTextRE, perl=TRUE )
+      file.remove(file)
+   })
+   it( "Respects logging level changes as strings", {
+      flog.threshold("INFO", name=packageName() %p% ".file")
+      flog.threshold("ERROR", name=packageName() %p% ".console")
       message <- "Testing split file and console logging with rest log levels."
       messageRE <- "\\Q" %p% message %p% "\\E"
       expect_false(file.exists(file))

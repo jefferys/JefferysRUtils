@@ -12,10 +12,10 @@ initSayLoggers(file = packageName(env = parent.frame()) \%p\% ".log",
 where \var{package} is guessed using \code{link{packageName(env=parent.frame())}}.}
 
 \item{fileLevel}{Only messages at least this important will be saved to the
-log file, by default "WARN".}
+log file, by default \code{WARN}.}
 
 \item{consoleLevel}{Only messages at least this important will be printed to the
-console, by default "INFO".}
+console, by default \code{INFO}.}
 }
 \value{
 Nothing, called only for its side effect of initializing loggers.

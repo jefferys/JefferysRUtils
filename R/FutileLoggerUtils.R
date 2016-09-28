@@ -147,9 +147,9 @@ OFF <- c(OFF= 0L)
 #' @param file The name of the log file, by default \file{"\var{package}.log"}
 #'   where \var{package} is guessed using \code{link{packageName(env=parent.frame())}}.
 #' @param fileLevel Only messages at least this important will be saved to the
-#'   log file, by default "WARN".
+#'   log file, by default \code{WARN}.
 #' @param consoleLevel Only messages at least this important will be printed to the
-#'   console, by default "INFO".
+#'   console, by default \code{INFO}.
 #' @return Nothing, called only for its side effect of initializing loggers.
 #'
 #' @examples
@@ -168,11 +168,11 @@ OFF <- c(OFF= 0L)
 initSayLoggers <- function( file= packageName(env=parent.frame()) %p% ".log",
                             fileLevel= WARN, consoleLevel= INFO
 ) {
-   if ( fileLevel == 'OFF' ) {
-      fileLevel <- 0
+   if ( is.character(fileLevel)) {
+      fileLevel <- get(fileLevel)
    }
-   if ( consoleLevel == 'OFF' ) {
-      consoleLevel <- 0
+   if ( is.character(consoleLevel)) {
+      consoleLevel <- get(consoleLevel)
    }
    flog.logger( packageName(env=parent.frame()) %p% ".file", fileLevel, appender=appender.file( file ))
    flog.logger( packageName(env=parent.frame()) %p% ".console", consoleLevel, appender=appender.console() )
