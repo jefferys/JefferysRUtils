@@ -61,7 +61,7 @@ NULL
 #'   a threshold of \code{TRACE}.
 #' @export
 sayTrace <- function( msg, ...,
-                      name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                      name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.trace( msg= msg, ..., name= logger, capture= capture )
@@ -73,7 +73,7 @@ sayTrace <- function( msg, ...,
 #'   a threshold of \code{DEBUG} or \code{TRACE}.
 #' @export
 sayDebug <- function( msg, ...,
-                      name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                      name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.debug( msg= msg, ..., name= logger, capture= capture )
@@ -85,7 +85,7 @@ sayDebug <- function( msg, ...,
 #'   a threshold of \code{INFO}, \code{DEBUG} or \code{TRACE}.
 #' @export
 sayInfo <- function( msg, ...,
-                     name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                     name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.info( msg= msg, ..., name= logger, capture= capture )
@@ -97,7 +97,7 @@ sayInfo <- function( msg, ...,
 #'   a threshold of \code{WARN}, \code{INFO}, \code{DEBUG} or \code{TRACE}.
 #' @export
 sayWarn <- function( msg, ...,
-                     name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                     name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.warn( msg= msg, ..., name= logger, capture= capture )
@@ -109,7 +109,7 @@ sayWarn <- function( msg, ...,
 #'   \code{ERROR}, \code{WARN}, \code{INFO}, \code{DEBUG} or \code{TRACE}.
 #' @export
 sayError <- function( msg, ...,
-                      name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                      name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.error( msg= msg, ..., name= logger, capture= capture )
@@ -122,7 +122,7 @@ sayError <- function( msg, ...,
 #'   \code{TRACE}.
 #' @export
 sayFatal <- function( msg, ...,
-                      name= paste0( packageName(), c( ".file", ".console" )), capture= FALSE
+                      name= paste0( packageName(env=parent.frame()), c( ".file", ".console" )), capture= FALSE
 ) {
    for( logger in name) {
       x <- flog.fatal( msg= msg, ..., name= logger, capture= capture )
@@ -145,7 +145,7 @@ OFF <- c(OFF= 0L)
 #' \code{DEBUG}, \code{TRACE}.
 #'
 #' @param file The name of the log file, by default \file{"\var{package}.log"}
-#'   where \var{package} is guessed using \code{link{packageName()}}.
+#'   where \var{package} is guessed using \code{link{packageName(env=parent.frame())}}.
 #' @param fileLevel Only messages at least this important will be saved to the
 #'   log file, by default "WARN".
 #' @param consoleLevel Only messages at least this important will be printed to the
@@ -165,7 +165,7 @@ OFF <- c(OFF= 0L)
 #' @import futile.logger
 #' @importFrom utils packageName
 #' @export
-initSayLoggers <- function( file= packageName() %p% ".log",
+initSayLoggers <- function( file= packageName(env=parent.frame()) %p% ".log",
                             fileLevel= WARN, consoleLevel= INFO
 ) {
    if ( fileLevel == 'OFF' ) {
@@ -174,6 +174,6 @@ initSayLoggers <- function( file= packageName() %p% ".log",
    if ( consoleLevel == 'OFF' ) {
       consoleLevel <- 0
    }
-   flog.logger( packageName() %p% ".file", fileLevel, appender=appender.file( file ))
-   flog.logger( packageName() %p% ".console", consoleLevel, appender=appender.console() )
+   flog.logger( packageName(env=parent.frame()) %p% ".file", fileLevel, appender=appender.file( file ))
+   flog.logger( packageName(env=parent.frame()) %p% ".console", consoleLevel, appender=appender.console() )
 }

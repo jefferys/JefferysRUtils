@@ -4,12 +4,12 @@
 \alias{initSayLoggers}
 \title{Initialize default loggers}
 \usage{
-initSayLoggers(file = packageName() \%p\% ".log", fileLevel = WARN,
-  consoleLevel = INFO)
+initSayLoggers(file = packageName(env = parent.frame()) \%p\% ".log",
+  fileLevel = WARN, consoleLevel = INFO)
 }
 \arguments{
 \item{file}{The name of the log file, by default \file{"\var{package}.log"}
-where \var{package} is guessed using \code{link{packageName()}}.}
+where \var{package} is guessed using \code{link{packageName(env=parent.frame())}}.}
 
 \item{fileLevel}{Only messages at least this important will be saved to the
 log file, by default "WARN".}
