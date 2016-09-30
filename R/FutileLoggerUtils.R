@@ -142,7 +142,10 @@ OFF <- c(OFF= 0L)
 #' don't specify the log file, it will write to the probably hidden file
 #' \file{".log"}. Allowed log levels are, in order of decreasing importance:
 #' \code{OFF}, \code{FATAL}, \code{ERROR}, \code{WARN}, \code{INFO},
-#' \code{DEBUG}, \code{TRACE}.
+#' \code{DEBUG}, \code{TRACE}. Messages logged to the console will be just the
+#' messages by default, messages logged to a file will be prepended with the
+#' log level and the date. This can be changed by modifying the layout
+#' parameters.
 #'
 #' @param file The name of the log file, by default \file{"\var{package}.log"}
 #'   where \var{package} is guessed using \code{link{packageName(env=parent.frame())}}.
@@ -150,23 +153,39 @@ OFF <- c(OFF= 0L)
 #'   log file, by default \code{WARN}.
 #' @param consoleLevel Only messages at least this important will be printed to the
 #'   console, by default \code{INFO}.
+#' @param fileLayout The layout string to use with messages logged to the log
+#'   file. By default this See \code{\link[futile.logger]{flog.layout}}
+#' @param consoleLayout The layout string to use with messages logged to the
+#'   console. See \code{\link[futile.logger]{flog.layout}}
+#'
 #' @return Nothing, called only for its side effect of initializing loggers.
 #'
 #' @examples
 #' \dontrun{
+#'   # Default settings
 #'   initSayLoggers()
+#'
 #'   # Won't be logged
 #'   sayDebug('Initialized logging.')
+#'
 #'   # Logged only to console, not file
 #'   sayInfo('Welcome!')
+#'   #> Welcome!
+#'
 #'   # Logged to console and file.
 #'   sayWarn("This conversation is being monitored.")
+#'   #> This conversation is being monitored.
+#'   #> [In log file]
+#'   #> WARN [YYYY-MM-DD hh::mm::ss TZ] This conversation is being monitored.
 #' }
 #' @import futile.logger
 #' @importFrom utils packageName
+#' @seealso futile.logger::flog.layout, futile.logger::flog.logger
 #' @export
 initSayLoggers <- function( file= packageName(env=parent.frame()) %p% ".log",
-                            fileLevel= WARN, consoleLevel= INFO
+   fileLevel= WARN, consoleLevel= INFO,
+   fileLayout= layout.format('~l [~t] ~m'),
+   consoleLayout= layout.format('~m')
 ) {
    if ( is.character(fileLevel)) {
       fileLevel <- get(fileLevel)
@@ -174,6 +193,11 @@ initSayLoggers <- function( file= packageName(env=parent.frame()) %p% ".log",
    if ( is.character(consoleLevel)) {
       consoleLevel <- get(consoleLevel)
    }
-   flog.logger( packageName(env=parent.frame()) %p% ".file", fileLevel, appender=appender.file( file ))
-   flog.logger( packageName(env=parent.frame()) %p% ".console", consoleLevel, appender=appender.console() )
+   calledFrom <- packageName(env=parent.frame())
+   fileLoggerName <- calledFrom %p% ".file"
+   consoleLoggerName <- calledFrom %p% ".console"
+   flog.logger( fileLoggerName, fileLevel, appender=appender.file( file ))
+   flog.layout( fileLayout, fileLoggerName)
+   flog.logger( consoleLoggerName, consoleLevel, appender=appender.console() )
+   flog.layout( consoleLayout, consoleLoggerName)
 }

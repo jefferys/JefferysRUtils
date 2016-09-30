@@ -96,39 +96,53 @@ describe( "Respects logger levels for each named logger provided.", {
 })
 describe( "Split logging to console + file by default", {
    file <- tempfile("tempLog", fileext= ".log" )
-   initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG )
    dateRE <- "\\[\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\]"
 
    it( "Logs to both if level allows", {
+      initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG )
       message <- "Testing split file and console logging."
       messageRE <- "\\Q" %p% message %p% "\\E"
-      wantRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
       expect_false(file.exists(file))
-      expect_output( sayError( message ), wantRE, perl= TRUE )
+      expect_output( sayError( message ), messageRE, perl= TRUE )
       expect_true(file.exists(file))
       gotText <- paste0(readLines(file))
-      wantTextRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
-      expect_match( gotText, wantTextRE, perl=TRUE )
+      wantFileRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
+      expect_match( gotText, wantFileRE, perl=TRUE )
+      file.remove(file)
+   })
+   it( "Respects layoyt changes", {
+      initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG,
+         consoleLayout = layout.format("~l [~t] ~m"),
+         fileLayout= layout.format("~m")
+      )
+      message <- "Testing split file and console logging."
+      messageRE <- "\\Q" %p% message %p% "\\E"
+      timeStampMessageRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
+      expect_false(file.exists(file))
+      expect_output( sayError( message ), timeStampMessageRE, perl= TRUE )
+      expect_true(file.exists(file))
+      gotText <- paste0(readLines(file))
+      expect_match( gotText, messageRE, perl=TRUE )
       file.remove(file)
    })
    it( "Logs to only one if level restricts", {
+      initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG )
       message <- "Testing split file and console logging."
       messageRE <- "\\Q" %p% message %p% "\\E"
-      wantRE <- "(?s)^DEBUG" %pp% dateRE %pp% messageRE %p% "$"
       expect_false(file.exists(file))
-      expect_output( sayDebug( message ), wantRE, perl= TRUE )
+      expect_output( sayDebug( message ), messageRE, perl= TRUE )
       expect_false(file.exists(file))
    })
    it( "Logs to only one if level restricts, if set as string", {
       initSayLoggers(file=file, fileLevel = "INFO", consoleLevel= "DEBUG" )
       message <- "Testing split file and console logging."
       messageRE <- "\\Q" %p% message %p% "\\E"
-      wantRE <- "(?s)^DEBUG" %pp% dateRE %pp% messageRE %p% "$"
       expect_false(file.exists(file))
-      expect_output( sayDebug( message ), wantRE, perl= TRUE )
+      expect_output( sayDebug( message ), messageRE, perl= TRUE )
       expect_false(file.exists(file))
    })
    it( "Respects logging level changes", {
+      initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG )
       flog.threshold(INFO, name=packageName() %p% ".file")
       flog.threshold(ERROR, name=packageName() %p% ".console")
       message <- "Testing split file and console logging with rest log levels."
@@ -137,11 +151,12 @@ describe( "Split logging to console + file by default", {
       expect_silent( sayInfo( message ))
       expect_true(file.exists(file))
       gotText <- paste0(readLines(file))
-      wantTextRE <- "(?s)^INFO" %pp% dateRE %pp% messageRE %p% "$"
-      expect_match( gotText, wantTextRE, perl=TRUE )
+      wantFileRE <- "(?s)^INFO" %pp% dateRE %pp% messageRE %p% "$"
+      expect_match( gotText, wantFileRE, perl=TRUE )
       file.remove(file)
    })
    it( "Respects logging level changes as strings", {
+      initSayLoggers(file=file, fileLevel = INFO, consoleLevel= DEBUG )
       flog.threshold("INFO", name=packageName() %p% ".file")
       flog.threshold("ERROR", name=packageName() %p% ".console")
       message <- "Testing split file and console logging with rest log levels."
@@ -150,8 +165,8 @@ describe( "Split logging to console + file by default", {
       expect_silent( sayInfo( message ))
       expect_true(file.exists(file))
       gotText <- paste0(readLines(file))
-      wantTextRE <- "(?s)^INFO" %pp% dateRE %pp% messageRE %p% "$"
-      expect_match( gotText, wantTextRE, perl=TRUE )
+      wantFileRE <- "(?s)^INFO" %pp% dateRE %pp% messageRE %p% "$"
+      expect_match( gotText, wantFileRE, perl=TRUE )
       file.remove(file)
    })
 })
@@ -198,14 +213,13 @@ describe( "sprintf message formats work.", {
    it( "Message can be a sprintf style string", {
       message <- "This is a number %i and a string %s."
       messageRE <- "\\Q" %p% "This is a number 4 and a string FOUR." %p% "\\E"
-      wantRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
+      wantFileRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
       expect_false(file.exists(file))
       x <- 4; y <- "FOUR"
-      expect_output( sayError( message, x, y ), wantRE, perl= TRUE )
+      expect_output( sayError( message, x, y ), messageRE, perl= TRUE )
       expect_true(file.exists(file))
       gotText <- paste0(readLines(file))
-      wantTextRE <- "(?s)^ERROR" %pp% dateRE %pp% messageRE %p% "$"
-      expect_match( gotText, wantTextRE, perl=TRUE )
+      expect_match( gotText, wantFileRE, perl=TRUE )
       file.remove(file)
    })
 })
