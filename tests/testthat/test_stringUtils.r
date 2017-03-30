@@ -19,16 +19,13 @@ describe( "Binary paste operators %p% and %pp%", {
    })
 })
 
-#
-# regexprNamedMatches
-#
-describe( 'regexprNamedMatches()', {
+describe( 'regexprMatches()', {
    it( "Retrieves multi-group matched text across a vector of strings", {
       regExp <- "(?<key>.+?)\\s*=\\s*(?<value>.+)"
       data <- c('name = Stuart R. Jefferys', 'email=srj@unc.edu')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data)
+      got<-regexprMatches(matchResults, data)
       want<-do.call(cbind, list(key=c('name', 'email'), value=c('Stuart R. Jefferys', 'srj@unc.edu')))
       expect_equal(got, want)
    })
@@ -38,7 +35,7 @@ describe( 'regexprNamedMatches()', {
       data <- c('name = Stuart R. Jefferys')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data)
+      got<-regexprMatches(matchResults, data)
       want<-do.call(cbind, list(key=c('name'), value=c('Stuart R. Jefferys')))
       expect_equal(got, want)
    })
@@ -48,7 +45,7 @@ describe( 'regexprNamedMatches()', {
       data <- c('Embedded 123 number', '0234')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data)
+      got<-regexprMatches(matchResults, data)
       want<-do.call(cbind, list(num=c('123', '0234')))
       expect_equal(got,want)
    })
@@ -58,7 +55,7 @@ describe( 'regexprNamedMatches()', {
       data <- c('id = 0123', 'email=srj@unc.edu')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data)
+      got<-regexprMatches(matchResults, data)
       want<-do.call(cbind, list(key=c('id', ''), value=c('0123', '')))
       expect_equal(got, want)
    })
@@ -68,7 +65,7 @@ describe( 'regexprNamedMatches()', {
       data <- c('id = 0123', 'email=srj@unc.edu')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data, use.na=TRUE)
+      got<-regexprMatches(matchResults, data, use.na=TRUE)
       want<-do.call(cbind, list(key=c('id', NA), value=c('0123', NA)))
       expect_equal(got, want)
    })
@@ -78,7 +75,7 @@ describe( 'regexprNamedMatches()', {
       data <- c('id = 0123', 'email=srj@unc.edu')
 
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data)
+      got<-regexprMatches(matchResults, data)
       want<-do.call(cbind, list(key=c('id', 'email'), value=c('0123', '')))
       expect_equal(got, want)
    })
@@ -88,9 +85,36 @@ describe( 'regexprNamedMatches()', {
 
       # Still want '', not NAs
       matchResults <- regexpr(regExp, data, perl= TRUE)
-      got<-regexprNamedMatches(matchResults, data, use.na=TRUE)
+      got<-regexprMatches(matchResults, data, use.na=TRUE)
       want<-do.call(cbind, list(key=c('id', 'email'), value=c('0123', '')))
       expect_equal(got, want)
+   })
+})
+
+describe( 'regexprCapture()', {
+   it( "Captures text from data using capture expressions", {
+      regExp <- "\\s*(?<name>.*?)\\s*<\\s*(?<email>.+)\\s*>\\s*"
+      data <- c( 'Stuart R. Jefferys <srj@unc.edu>',
+                 'nonya business <nobody@nowhere.com>',
+                 'no email',
+                 '<just@an.email>' )
+      got <- regexprCapture(regExp, data)
+      want <- cbind( c("Stuart R. Jefferys", "nonya business", "", ""),
+                     c("srj@unc.edu", "nobody@nowhere.com", "", "just@an.email"))
+      colnames(want) <- c("name","email")
+      expect_equal( got, want )
+   })
+   it( "Can be set to use NA for non matching groups instead of empty strings", {
+      regExp <- "\\s*(?<name>.*?)\\s*<\\s*(?<email>.+)\\s*>\\s*"
+      data <- c( 'Stuart R. Jefferys <srj@unc.edu>',
+                 'nonya business <nobody@nowhere.com>',
+                 'no email',
+                 '<just@an.email>' )
+      got <- regexprCapture( regExp, data, use.na= TRUE )
+      want <- cbind( c("Stuart R. Jefferys", "nonya business", NA, ""),
+                     c("srj@unc.edu", "nobody@nowhere.com", NA, "just@an.email"))
+      colnames(want) <- c("name","email")
+      expect_equal( got, want )
    })
 })
 

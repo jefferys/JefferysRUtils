@@ -33,27 +33,34 @@
 #' @export
 `%pp%` <- function(x, y) { paste(x, y) }
 
-#' Extract matched named substrings
+#' Extract matched substrings
 #'
-#' Extracts the substrings matched by named capture groups from the provided
-#' match result output from \code{\link[base]{regexpr}} (with \code{perl=
-#' TRUE}). Will return a matrix of strings with one column for each named
+#' You probably want \code{\link{regexprCapture}} as it is likely you are trying
+#' to use a regular expression with capture groups. This function parses an
+#' already generated match result; it is used by regexprCapture.
+#'
+#' Extracts the substrings matched by capture groups from a provided
+#' match result, i.e from output from \code{\link[base]{regexpr}}, with \code{perl=
+#' TRUE}). Will return a matrix of strings with one column for each
 #' capture group and one row for each string in the vector matched against. By
 #' default will return empty strings if match fails, but can be set to return
-#' NAs if desired.
+#' NAs if desired. Supports named capture groups, matrix columns will be named
+#' as appropriate.
 #'
 #' This is intended for use with \code{\link[base]{regexpr}} to parse a string
-#' and extract substrings via named capture groups, similar to how
+#' and extract substrings via capture groups, similar to how
 #' \code{\link[base]{regmatches}} is used. If only one string is matched
 #' against, then returned matrix will have one row only.
 #'
 #' Note that regExp with multiple capture groups will need to use greedy and
-#' non-greedy matching carefully if the capture groups are to work correctly and
-#' not interfering with each other or not-capture components of the regExp.
+#' non-greedy matching carefully to avoid the capture groups interfering with
+#' each other.
 #'
 #' @param matchResults The results of a match performed using
 #'   \code{\link[base]{regexpr}(regExp, matchText, perl= TRUE)} where
-#'   \code{regExp} has named capture groups like \code{(?<theName>...)}.
+#'   \code{regExp} has capture groups or named capture groups, like
+#'   \code{([^:]*)} or \code{(?<beforeColon>[^:]*)}. Will not work with
+#'   \code{perl= FALSE}.
 #'
 #' @param matchText The text originally matched against, a vector of strings.
 #'
@@ -62,11 +69,12 @@
 #'   capture groups matching nothing, e.g. \code{(?<num>\\d*)}. Setting this
 #'   \code{TRUE} causes a failing match to return all NA values instead.
 #'
-#' @return A matrix with one column for each named capture group (with matching
-#'   column name) and one row for each string in the text vector matched to. The
-#'   value of each cell is the text matched by the named capture group. If any
-#'   capture group does not match, all returned strings are empty for that text
-#'   vector element (row), or \code{NA} if \code{use.na= TRUE}
+#' @return A matrix with one column for each capture group (with matching
+#'   column name for named capture groups) and one row for each string in the
+#'   text vector matched to. The value of each cell is the text matched by the
+#'   named capture group. If any capture group does not match, all returned
+#'   strings are empty for that text vector element (row), or \code{NA} if
+#'   \code{use.na= TRUE}
 #'
 #' @examples
 #' regExp <- "(?<key>.+?)\\s*=\\s*(?<value>.+)"
@@ -77,8 +85,9 @@
 #' #=> [1,] "name"  "Stuart R. Jefferys"
 #' #=> [2,] "email" "srj@@unc.edu"
 #'
+#' @seealso \code{\link{regexprCapture}} \code{\link{regex}}
 #' @export
-regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
+regexprMatches <- function( matchResults, matchText, use.na=FALSE ) {
 
    captureNames <- attr(matchResults,'capture.names')
    nrows <- length(matchText)
@@ -86,8 +95,8 @@ regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
    retMat <- matrix(character(nrows*ncols), nrow = nrows, ncol = ncols, dimnames=list(rep(NULL,nrows),captureNames))
    captureStarts <- attr(matchResults,'capture.start')
    captureLengths <- captureStarts + attr(matchResults,'capture.length') - 1
-   for (captureName in captureNames) {
-      retMat[,captureName] = substr(matchText,captureStarts[,captureName], captureLengths[,captureName])
+   for (colPos in 1:ncols) {
+      retMat[,colPos] = substr(matchText,captureStarts[,colPos], captureLengths[,colPos])
    }
 
    # Simple but possibly inefficient to just reset values afterwards.
@@ -99,6 +108,60 @@ regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
       }
    }
    return(retMat)
+}
+
+#' Extract text with regexp capture groups
+#'
+#' Applies a (perl) regualr expression with capture groups to text strings and
+#' returns a matrix. Each matrix column is the text that one capture group
+#' matched (in order), each matrix row is the outcome of applying that regexp to
+#' one element of the text data. If a capture group does not match, the empty
+#' string is returned unless \code{use.na = TRUE} is set, it which case NA is
+#' returned. In either case, if a capture group matches nothing (i.e. when * is
+#' used to match 0 or more, and 0 match), an empty string is returned.
+#'
+#' This is implemented using \code{\link{regexprMatches}}
+#'
+#' @param re The (perl) regular expression as a string, with capture groups. May
+#'   use named capture groups (\code{(?<name>...)}). Must double any \code{\\}
+#'   used, e.g. zero or more whitespace characters would be \code{(\\s*)}
+#'
+#' @param data A vector of strings to search in. The rows in the returned matrix
+#'   will be the captured text from succesive elements of this vector.
+#'
+#' @param use.na Set TRUE to return NA as the matched text for capture groups
+#'   that fail to match
+#'
+#' @return A matrix with one column per regular expression capture group and one
+#'   row per data element. Columns will be named if named capture groups are
+#'   used.
+#'
+#' @examples
+#' # Capture group: (...)
+#' # Named capture group: (?<name>...)
+#' # Lazy quantifier: *?
+#' regExp <- "\\s*(?<name>.*?)\\s*<\\s*(?<email>.+)\\s*>\\s*"
+#' data <- c('Stuart R. Jefferys <srj@@unc.edu>',
+#'           'nonya business <nobody@@nowhere.com>',
+#'           'no email', '<just@@an.email>' )
+#'
+#' regexprCapture(regExp, data)
+#' #=> name                  email
+#' #=> [1,] "Stuart R. Jefferys" "srj@unc.edu"
+#' #=> [2,] "nonya business"     "nobody@nowhere.com"
+#' #=> [3,] ""                    ""
+#' #=> [4,] ""                    "just@an.email"
+#'
+#' regexprCapture(regExp, data, use.na=TRUE)
+#' #=> name                  email
+#' #=> [1,] "Stuart R. Jefferys" "srj@unc.edu"
+#' #=> [2,] "nonya business"     "nobody@nowhere.com"
+#' #=> [3,] NA                    NA
+#' #=> [4,] ""                    "just@an.email"
+#'
+#' @export
+regexprCapture <- function( re, data, use.na = FALSE ) {
+   regexprMatches( regexpr(re, data, perl= TRUE), data, use.na= use.na )
 }
 
 #' Evaluate and fill string templates
@@ -131,10 +194,10 @@ regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
 #'   an environment in which variables are defined for use in interpolation. If
 #'   not specified, then by default this will be a new environment whose parent
 #'   is the caller's environment, as returned by \code{\link{parent.frame}}.
-#'   Variables visible in the calling function (or set there) will be avialble
+#'   Variables visible in the calling function (or set there) will be available
 #'   for use in the template. Note that although R code will normally only set
 #'   or change variables in this frame when evaluated, it can set or change
-#'   variables at any level, hence malicous or careless \code{as.R= TRUE}
+#'   variables at any level, hence malicious or careless \code{as.R= TRUE}
 #'   evaluated templates can leak or interfere with other R variables in your
 #'   code (or indeed in any other package or even system code). With great power
 #'   comes great responsibility.
@@ -145,7 +208,7 @@ regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
 #'   string, so \code{'{1+1}'} is returned as \code{'2'}.
 #'
 #' @examples
-#' # Template is asingle text element (could be multi-line)
+#' # Template is a single text element (could be multi-line)
 #' templateText <- "Dear {{name}}: Please call me at {{phone}}."
 #' name <- "John Doe"
 #' phone <- "555-555-5555"
@@ -219,7 +282,7 @@ regexprNamedMatches <- function( matchResults, matchText, use.na=FALSE ) {
 #' suppressWarnings( templateFill( templateText, as.R= TRUE ))
 #' #=> [1] "x (template) = bad command!!!"
 #' #=> [2] "y (template) = bad command also!!!"
-#' # Template has reached out and mangeled a previously safe variable
+#' # Template has reached out and mangled a previously safe variable
 #' paste( "Running", x, sep= " ")
 #' #=> [1] "Running safe command"
 #' paste( "Running", y, sep= " ")
