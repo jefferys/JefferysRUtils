@@ -55,7 +55,7 @@ each other.
 regExp <- "(?<key>.+?)\\\\s*=\\\\s*(?<value>.+)"
 data <- c('name = Stuart R. Jefferys', 'email=srj@unc.edu')
 matchResults <- regexpr(regExp, data, perl= TRUE)
-regexprNamedMatches(matchResults, data)
+regexprMatches(matchResults, data)
 #=>      key     value
 #=> [1,] "name"  "Stuart R. Jefferys"
 #=> [2,] "email" "srj@unc.edu"
