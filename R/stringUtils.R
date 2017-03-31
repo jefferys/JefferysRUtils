@@ -387,3 +387,268 @@ templateFill <- function( x,
    return(retVal)
 }
 
+
+
+#' Convert strings to vectors of chars.
+#'
+#' For inputs containing only a single string, returns a character vector of
+#' single chars (UTF8s) by default. For inputs containing multiple strings, or if
+#' drop= FALSE is set, returns a list of character vectors (of single chars)
+#' named for the string. Duplicate names are fine.
+#'
+#' @param x A vector of strings to convert
+#'
+#' @param drop Only affects output when \code{x=} is a single element. Set to
+#' FALSE to avoid automatic simplification of the one-element list output to a
+#' vector.
+#'
+#' @param use.names By default the list will use the original strings as names.
+#' This may not be reasonable for large strings; set this false to just use
+#' numeric ordering (the same as the input string order).
+#'
+#' @return The input strings, split into vectors of single characters. If more
+#' than one string is input, or if \code{drop= FALSE} is set this outputs a list
+#' of vectors. Vectors will be named for the input string, if possible.
+#'
+#' @examples
+#' toChar( c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA ) )
+#' #=> $ABC
+#' #=> [1] "A" "B" "C"
+#' #=>
+#' #=> $ABC
+#' #=> [1] "A" "B" "C"
+#' #=>
+#' #=> $AßB
+#' #=> [1] "A" "ß" "B"
+#' #=>
+#' #=> $`123`
+#' #=> [1] "1" "2" "3"
+#' #=>
+#' #=> [[5]]
+#' #=> [1] ""
+#' #=>
+#' #=> $x
+#' #=> [1] "x"
+#' #=>
+#' #=> $<NA>
+#' #=> [1] NA
+#'
+#' toChar( "ABC" )
+#' #=> [1] "A" "B" "C"
+#'
+#' toChar( c("ABC", "ABC", use.names= FALSE) )
+#' #=> [[1]]
+#' #=> [1] "A" "B" "C"
+#' #=>
+#' #=> [[1]]
+#' #=> [1] "A" "B" "C"
+#'
+#' toChar( "ABC", drop= FALSE )
+#' #=> $ABC
+#' #=> [1] "A" "B" "C"
+#'
+#' toChar( "ABC", drop= FALSE, use.names= FALSE )
+#' #=> [[1]]
+#' #=> [1] "A" "B" "C"
+#'
+#' toChar( 123 )
+#' #=> [1] "1" "2" "3"
+#'
+#' toChar( NULL )
+#' #=> character(0)
+#'
+#' toChar( character(0) )
+#' #=> character(0)
+#'
+#' @export
+toChar <- function (x, drop= TRUE, use.names=TRUE) {
+   x <- as.character(x)
+   if (length(x) == 0) {
+      return(character(0))
+   }
+   if (length(x) == 1) {
+      charString <- intToUtf8( utf8ToInt(x), multiple= TRUE )
+      if (length(charString) == 0) {
+         charString <- ""
+      }
+      if (drop) {
+         return(charString)
+      }
+      else {
+         charString <- list(c(charString))
+         if (use.names) {
+            names(charString) <- x
+         }
+         return(charString)
+      }
+   }
+   else {
+      charList <- sapply(
+         x,
+         function (str) {
+            intToUtf8( utf8ToInt(str), multiple= TRUE )
+         },
+         USE.NAMES= use.names
+      )
+      charList[sapply(charList, function(vec) {length(vec) == 0} )] <- ""
+      return(charList)
+   }
+}
+
+#' Reverse a string
+#'
+#' @param x A vector of strings to reverse. Returns NA for NA and empty for empty.
+#' If x=NULL or character(0), returns character(0).
+#'
+#' @return A vector of strings, each reversed. This is utf8 aware.
+#'
+#' @examples
+#' revString( "ABC" )
+#' #=> revString( "ABC" )
+#'
+#' revString( c( "ABC", "ABC", "A\u00dfB", 123, "", "x", NA ))
+#' #=> [1] "CBA" "CBA" "BßA" "321" ""    "x"   NA
+#'
+#' revString( NULL )
+#' #=> character(0)
+#'
+#' revString( character(0) )
+#' #=> character(0)
+#'
+#' @export
+revString <- function (x) {
+   x <- as.character(x)
+   if (length(x) == 0) {
+      return(character(0))
+   }
+   if (length(x) == 1) {
+      charString <- intToUtf8( rev(utf8ToInt( x )))
+      return(charString)
+   }
+   else {
+      return( sapply( x, function(str) { intToUtf8( rev(utf8ToInt( str ))) }, USE.NAMES= FALSE ))
+   }
+}
+
+
+#' Longest common prefix
+#'
+#' Finds and returns the longest prefix common to all strings in a character
+#' vector. Can be set to ignore case, in which case the returned common string
+#' will be in lower case. If any strings are \code{NA}, this returns \code{NA}
+#' unless \code{dropNA= TRUE} is set, which will drop \code{NA}s before
+#' checking for a common prefix.
+#'
+#' @param x The strings to find the longest common prefix for.
+#'
+#' @param ignoreCase Set this true to match prefixes even if they differ in case.
+#'
+#' @param dropNA Set this true to ignore \code{NA}s when searching for a common
+#' prefix.
+#'
+#' @return The common prefix, if any, or "", if no common prefix can be found.
+#'
+#' @examples
+#' commonPrefix( c( "ABCDE", "ABC", "ABc" ))
+#' #=> [1] "AB"
+#'
+#' commonPrefix( c( "ABC", "abc", "def" ))
+#' #=> [1] ""
+#'
+#' commonPrefix( c( "ABCDE", "ABC", "" ))
+#' #=> [1] ""
+#'
+#' commonPrefix( c( "ABCDE", "ABC", NA ))
+#' #=> [1] NA
+#'
+#' commonPrefix( c( "A\u00dfCDE", "A\u00dfC", "A\u00dfc" ))
+#' #=> [1] "Aß"
+#'
+#' commonPrefix( c("ABCDE", "ABC", "ABc" ), ignoreCase= TRUE )
+#' #=> [1] "abc"
+#'
+#' @seealso \code{\link{commonSuffix}}
+#' @export
+commonPrefix <- function (x, ignoreCase= FALSE, dropNA= FALSE) {
+   # Get first and last lexically ordered string in x. Faster than sorting.
+   # Have to be careful about shorter strings, e.g. ABC ab abc
+
+   if (dropNA) {
+      x <- x[! is.na(x)]
+   }
+
+   minCharCount <- min(nchar(x))
+
+   if (ignoreCase) {
+      candidateSubstrings <- tolower( substr(x, 1, minCharCount ))
+   }
+   else {
+      candidateSubstrings <-          substr( x, 1, minCharCount )
+   }
+   lowSubStr  <- min( candidateSubstrings )
+   highSubStr <- max( candidateSubstrings )
+
+   # Convert to character vectors
+   lowCharInts  <- utf8ToInt( lowSubStr )
+   highCharInts <- utf8ToInt( highSubStr )
+
+   # Find position of first non matching char, return substring up to but
+   # not including that char.
+   firstNonMatch <- match(c(FALSE, NA), lowCharInts == highCharInts, nomatch= minCharCount + 1)
+   commonSubstring <- substr(x[1], 1,  firstNonMatch - 1)
+
+   if (ignoreCase) {
+      tolower( commonSubstring )
+   }
+   else {
+      commonSubstring
+   }
+}
+
+#' Longest common suffix
+#'
+#' Finds and returns the longest suffix common to all strings in a character
+#' vector. Can be set to ignore case, in which case the returned common string
+#' will be in lower case. If any strings are \code{NA}, this returns \code{NA}
+#' unless \code{dropNA= TRUE} is set, which will drop \code{NA}s before
+#' checking for a common suffix
+#'
+#' @param x The strings to find the longest common suffix for.
+#'
+#' @param ignoreCase Set this true to match suffixes even if they differ in case.
+#'
+#' @param dropNA Set this true to ignore \code{NA}s when searching for a common
+#' suffix
+#'
+#' @return The common suffix, if any, or "", if no common suffix can be found.
+#'
+#' @examples
+#' commonSuffix( c( "ABCDE", "CDE", "cDE" ))
+#' #=> [1] "DE"
+#'
+#' commonSuffix( c( "ABC", "abc", "def" ))
+#' #=> [1] ""
+#'
+#' commonSuffix( c( "ABCDE", "CDE", "" ))
+#' #=> [1] ""
+#'
+#' commonSuffix( c( "ABCDE", "ABCDE", NA ))
+#' #=> [1] NA
+#'
+#' commonSuffix( c( "A\u00dfC", "A\u00dfC", "a\u00dfC" ))
+#' #=> [1] "ßC"
+#'
+#' commonSuffix( c("ABCDE", "CDE", "cDE" ), ignoreCase= TRUE )
+#' #=> [1] "cde"
+#'
+#' @seealso \code{\link{commonPrefix}}
+#' @export
+commonSuffix <- function (x, ignoreCase= FALSE, dropNA= FALSE) {
+   # Have to reverse strings to use same algorithm as for prefix. Doing so probably
+   # makes this significantly slower. Maybe another algoirithm would be better?
+   revStrings <- revString( x )
+
+   # As reversed, common previx is actually the common suffix, reversed
+   revSuffix <- commonPrefix(revStrings, ignoreCase= ignoreCase, dropNA= dropNA)
+   intToUtf8( rev( utf8ToInt( revSuffix )))
+}

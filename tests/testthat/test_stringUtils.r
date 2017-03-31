@@ -1,4 +1,4 @@
-context( "Testing string utils" )
+context( "Testing stringUtils.R" )
 
 describe( "Binary paste operators %p% and %pp%", {
    it( "Joins without spaces using %p%.", {
@@ -500,5 +500,530 @@ describe( "templateFill() exception handling with and without as.R", {
 
       wantErrorRE <- "could not find function.+noSuchFunction"
       expect_warning( expect_error(templateFill('{{noSuchFunction()}}', as.R= TRUE), wantErrorRE), securityWarn_RE)
+   })
+})
+
+describe( "toChar", {
+   describe( "Required parameter x=", {
+      it( "Convets single element input to vector of char", {
+         data <- "ABC"
+         want <- c("A", "B", "C")
+         got <- toChar( data )
+         expect_equal(got, want)
+
+         data <- 123
+         want <- c("1", "2", "3")
+         got <- toChar( data )
+         expect_equal(got, want)
+      })
+      it( "Converts vector element input to list of vector of char", {
+         data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- list( c("A", "B", "C"), c("A", "B", "C"),
+                       c("A", "\u00df", "B"), c("1", "2", "3"), "", "x", NA_character_ )
+         names(want) <- data
+         got <- toChar( data )
+         expect_equal(got, want)
+      })
+      it( "For NULL and empty vector input returns an empty vector", {
+         data <- NULL
+         want <- character(0)
+         got <- toChar( data )
+         expect_equal(got, want)
+
+         data <- character(0)
+         want <- character(0)
+         got <- toChar( data )
+         expect_equal(got, want)
+      })
+   })
+   describe( "Optional parameter drop= TRUE", {
+      it( "Has the expected default (TRUE)", {
+         data <- "ABC"
+         want <- toChar( data )
+         got <- toChar( data, drop=TRUE )
+         expect_equal(got, want)
+
+         data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- toChar( data )
+         names(want) <- data
+         got <- toChar( data, drop=TRUE )
+         expect_equal(got, want)
+      })
+      it( "Allows changing single element input to produce a list. Vector unchanged", {
+         data <- "ABC"
+         want <- list("ABC"=c("A", "B", "C"))
+         got <- toChar( data, drop=FALSE )
+         expect_equal(got, want)
+
+         data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- toChar( data, drop=TRUE )
+         got <- toChar( data, drop=FALSE )
+         expect_equal(got, want)
+      })
+   })
+   describe( "Optional parameter use.names= TRUE", {
+      it( "Has the expected default (TRUE)", {
+         data <- "ABC"
+         want <- toChar( data )
+         got <- toChar( data, use.names= TRUE )
+         expect_equal(got, want)
+
+         data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- toChar( data )
+         got <- toChar( data, use.names= TRUE )
+         expect_equal(got, want)
+      })
+      it( "Allows producing list output without a name. Vector unchanged", {
+         data <- "ABC"
+         want <- toChar( data, use.names=TRUE )
+         got <- toChar( data, use.names=FALSE )
+         expect_equal(got, want)
+
+         data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- list( c("A", "B", "C"), c("A", "B", "C"),
+                       c("A", "\u00df", "B"), c("1", "2", "3"), "", "x", NA_character_ )
+         got <- toChar( data, use.names=FALSE )
+         expect_equal(got, want)
+      })
+   })
+   describe( "Parameter interactions", {
+      describe( "use.names= && drop=", {
+         it( "Reports single and multi-string inputs as unnamed lists", {
+            data <- "ABC"
+            want <- list( c("A", "B", "C" ))
+            got <- toChar( data, use.names=FALSE, drop=FALSE )
+            expect_equal(got, want)
+
+            data <- c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+            want <- list( c("A", "B", "C"), c("A", "B", "C"),
+                          c("A", "\u00df", "B"), c("1", "2", "3"), "", "x", NA_character_ )
+            got <- toChar( data, use.names=FALSE, drop=FALSE )
+            expect_equal(got, want)
+         })
+      })
+   })
+})
+
+describe( "revString", {
+   describe( "Required parameter x", {
+      it( "Reverses single element input strings", {
+         data <- "ABC"
+         want <- "CBA"
+         got <- revString(data)
+         expect_equal(got, want)
+      })
+      it( "Reverses each string in a vector", {
+         data <- c( "ABC", "ABC", "A\u00dfB", 123, "", "x", NA )
+         want <- c( "CBA", "CBA", "BßA", "321", "", "x", NA )
+         got <- revString(data)
+         expect_equal(got, want)
+      })
+      it( "Returns character(0) for NULL or empty vector input", {
+         data <- NULL
+         want <- character(0)
+         got <- revString(data)
+         expect_equal(got, want)
+
+         data <- character(0)
+         want <- character(0)
+         got <- revString(data)
+         expect_equal(got, want)
+      })
+   })
+})
+
+describe( "commonPrefix", {
+   describe( "Required parameter x", {
+      it( "Returns single element as its own commonPrefix", {
+         data <- "ABC"
+         want <- "ABC"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- "A"
+         want <- "A"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- ""
+         want <- ""
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- NA
+         want <- NA_character_
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common prefix if all are the same string", {
+         data <- c( "ABC", "ABC", "ABC")
+         want <- "ABC"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "A", "A", "A")
+         want <- "A"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "", "", "")
+         want <- ""
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( NA, NA, NA)
+         want <- NA_character_
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common prefix if of different length, shortest complete", {
+         data <- c( "ABC", "AB")
+         want <- "AB"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "AB", "A")
+         want <- "A"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "AB", "A", "")
+         want <- ""
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "AB", "", NA)
+         want <- NA_character_
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common prefix up to first difference, case insensitive", {
+         data <- c( "ABC", "ABD")
+         want <- "AB"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "ABc")
+         want <- "AB"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "AB", "AC")
+         want <- "A"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "AB", "Ab")
+         want <- "A"
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "BC", "C")
+         want <- ""
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+
+         data <- c( "AB", "ab", "ABC" )
+         want <- ""
+         got <- commonPrefix( data )
+         expect_equal( got, want )
+      })
+   })
+   describe( "Optional parameter ignoreCase= FALSE", {
+      it( "Case insensitive prefix match enabled by ignoreCase= TRUE", {
+         data <- c( "ABC", "ab*" )
+         want <- "ab"
+         got <- commonPrefix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "A", "a", "AB" )
+         want <- "a"
+         got <- commonPrefix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "ABC")
+         want <- "abc"
+         got <- commonPrefix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "bcd")
+         want <- ""
+         got <- commonPrefix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "abc", NA)
+         want <- NA_character_
+         got <- commonPrefix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+      })
+      it( "defaults to ignoreCase= FALSE", {
+         data <- c( "ABC", "ab*" )
+         want <- commonPrefix( data, ignoreCase= FALSE )
+         got <- commonPrefix( data )
+         expect_true( identical(got, want ))
+
+         want <- commonPrefix( data, ignoreCase= TRUE )
+         got <- commonPrefix( data )
+         expect_false( identical(got, want ))
+      })
+   })
+   describe( "Optional parameter dropNA= FALSE", {
+      it( "Ignores NA values if dropNA set", {
+         data <- c( "AB", NA, "ABC" )
+         want <- "AB"
+         got <- commonPrefix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABD", NA, "ABC" )
+         want <- "AB"
+         got <- commonPrefix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abc", NA, "ABC" )
+         want <- ""
+         got <- commonPrefix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abc", NA, NA, NA )
+         want <- "abc"
+         got <- commonPrefix( data, dropNA= TRUE )
+         expect_equal( got, want )
+      })
+      it( "defaults to dropNA= FALSE", {
+         data <- c( "ABC", NA )
+         want <- commonPrefix( data, dropNA= FALSE )
+         got <- commonPrefix( data )
+         expect_true( identical(got, want ))
+
+         want <- commonPrefix( data, dropNA= TRUE )
+         got <- commonPrefix( data )
+         expect_false( identical(got, want ))
+      })
+   })
+   describe( "Parameter interactions", {
+      describe( "ignoreCase= && dropNA=", {
+         data <- c( "AB", NA, "ABC" )
+         want <- "ab"
+         got <- commonPrefix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "AB", NA, "abc" )
+         want <- "ab"
+         got <- commonPrefix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABD", NA, "ABC" )
+         want <- "ab"
+         got <- commonPrefix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abD", NA, "aBC" )
+         want <- "ab"
+         got <- commonPrefix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", NA, NA, NA )
+         want <- "abc"
+         got <- commonPrefix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+      })
+   })
+})
+
+describe( "commonSuffix", {
+   describe( "Required parameter x", {
+      it( "Returns single element as its own commonSuffix", {
+         data <- "ABC"
+         want <- "ABC"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- "A"
+         want <- "A"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- ""
+         want <- ""
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- NA
+         want <- NA_character_
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common suffix if all are the same string", {
+         data <- c( "ABC", "ABC", "ABC")
+         want <- "ABC"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "A", "A", "A")
+         want <- "A"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "", "", "")
+         want <- ""
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( NA, NA, NA)
+         want <- NA_character_
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common suffix if of different length, shortest complete", {
+         data <- c( "ABC", "BC")
+         want <- "BC"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "BC", "C")
+         want <- "C"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "AB", "B", "")
+         want <- ""
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "AB", "", NA)
+         want <- NA_character_
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+      })
+      it( "Returns common suffix up to first difference, case insensitive", {
+         data <- c( "ABC", "DBC")
+         want <- "BC"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "aBC")
+         want <- "BC"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "BC", "AC")
+         want <- "C"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "BC", "bC")
+         want <- "C"
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "AB", "A")
+         want <- ""
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+
+         data <- c( "BC", "bc", "ABC" )
+         want <- ""
+         got <- commonSuffix( data )
+         expect_equal( got, want )
+      })
+   })
+   describe( "Optional parameter ignoreCase= FALSE", {
+      it( "Case insensitive suffix match enabled by ignoreCase= TRUE", {
+         data <- c( "ABC", "*bc" )
+         want <- "bc"
+         got <- commonSuffix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "B", "b", "AB" )
+         want <- "b"
+         got <- commonSuffix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "ABC")
+         want <- "abc"
+         got <- commonSuffix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "bcd")
+         want <- ""
+         got <- commonSuffix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", "abc", NA)
+         want <- NA_character_
+         got <- commonSuffix( data, ignoreCase= TRUE )
+         expect_equal( got, want )
+      })
+      it( "defaults to ignoreCase= FALSE", {
+         data <- c( "ABC", "*bc" )
+         want <- commonSuffix( data, ignoreCase= FALSE )
+         got <- commonSuffix( data )
+         expect_true( identical(got, want ))
+
+         want <- commonSuffix( data, ignoreCase= TRUE )
+         got <- commonSuffix( data )
+         expect_false( identical(got, want ))
+      })
+   })
+   describe( "Optional parameter dropNA= FALSE", {
+      it( "Ignores NA values if dropNA set", {
+         data <- c( "BC", NA, "ABC" )
+         want <- "BC"
+         got <- commonSuffix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", NA, "DBC" )
+         want <- "BC"
+         got <- commonSuffix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abc", NA, "ABC" )
+         want <- ""
+         got <- commonSuffix( data, dropNA= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abc", NA, NA, NA )
+         want <- "abc"
+         got <- commonSuffix( data, dropNA= TRUE )
+         expect_equal( got, want )
+      })
+      it( "defaults to dropNA= FALSE", {
+         data <- c( "ABC", NA )
+         want <- commonSuffix( data, dropNA= FALSE )
+         got <- commonSuffix( data )
+         expect_true( identical(got, want ))
+
+         want <- commonSuffix( data, dropNA= TRUE )
+         got <- commonSuffix( data )
+         expect_false( identical(got, want ))
+      })
+   })
+   describe( "Parameter interactions", {
+      describe( "ignoreCase= && dropNA=", {
+         data <- c( "BC", NA, "ABC" )
+         want <- "bc"
+         got <- commonSuffix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "BC", NA, "abc" )
+         want <- "bc"
+         got <- commonSuffix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "DBC", NA, "ABC" )
+         want <- "bc"
+         got <- commonSuffix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "abC", NA, "dBC" )
+         want <- "bc"
+         got <- commonSuffix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+
+         data <- c( "ABC", NA, NA, NA )
+         want <- "abc"
+         got <- commonSuffix( data, dropNA= TRUE, ignoreCase= TRUE )
+         expect_equal( got, want )
+      })
    })
 })
