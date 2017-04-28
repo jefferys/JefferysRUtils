@@ -92,3 +92,27 @@ describe( "slurp()", {
 
    unlink( c(normalFile, emptyFile, noTextFile, onlyCommentFile) )
 })
+
+describe( "mergeFiles()", {
+  a <- c("File a, line 1", "File a, line 2", "File a, line 3")
+  b <- c("File b, line 1", "File b, line 2", "File b, line 3")
+  c <- c("File c, line 1", "File c, line 2", "File c, line 3")
+  describe( "All defaults", {
+     describe( "inFiles= parameter" {
+        describe( "merging files without headers" ) {
+           it( "Merges 2 files adding filenames as first column.", {
+              a2 <- makeTempFile( a[1:2] )
+              b2 <- makeTempFile( b[1:2] )
+              out <- tempFile()
+
+              ret <- mergeFiles( c(a2, b2), out )
+              expect_null(ret)
+
+              got <- readLines(out)
+              want <- c( paste(a2, a[1:2], sep= "\t"), paste(b2, b[1:2], sep= "\t" ))
+              expect_equal( got, want )
+           })
+        }
+     })
+  })
+})
