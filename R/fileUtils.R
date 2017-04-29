@@ -1,8 +1,10 @@
 # Functions for working with file contents, i.e. reading and writing.
 # Paths and file metadata functions should be elsewhere.
 
-makeTempFile <- function() {
-   return(NULL)
+makeTempFile <- function( lines= character(0) ) {
+   fileName <- tempfile()
+   writeLines(lines, fileName)
+   return( fileName )
 }
 
 #' Read a file's lines in as vector

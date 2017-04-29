@@ -5,6 +5,19 @@ describe( "makeTempFile", {
       expect_silent( makeTempFile() )
    })
    describe("default parameters", {
+      file <- makeTempFile()
+      it( "Returns name of file created.", {
+         expect_true( file.exists( file ))
+      })
+      it( "Creates readable empty file", {
+         got <- file.size(file)
+         want <- 0
+         expect_equal( got, want )
+
+         got <- readLines(file)
+         want <- character(0)
+         expect_equal( got, want )
+      })
    })
 })
 
