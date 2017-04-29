@@ -132,6 +132,7 @@ is too small this may be inefficient in both time and memory.
   Note: Applying your function to blocks with this function will likely be
   faster than applying it one line at a time with \code{fileLineApply}.
 }
+
 \examples{
 ### Tiny file to parse (auto-deleted on exit)
 content <- c( "One line", "Two lines.", "", "Four" )
@@ -212,4 +213,3 @@ fileBlockApply( con, function (x) { length(x) }, chunkSize= 3, filter=TRUE)
 #> [1] "3"  "6"  "9"  "10"
 
 }
-

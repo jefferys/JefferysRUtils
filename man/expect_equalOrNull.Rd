@@ -37,4 +37,3 @@ expect_equalOrNull( 1, NULL )
 expect_equalOrNull( NULL, 1 )
 }
 }
-
