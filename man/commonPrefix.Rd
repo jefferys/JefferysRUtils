@@ -47,4 +47,3 @@ commonPrefix( c("ABCDE", "ABC", "ABc" ), ignoreCase= TRUE )
 \seealso{
 \code{\link{commonSuffix}}
 }
-

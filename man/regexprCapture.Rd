@@ -58,4 +58,3 @@ regexprCapture(regExp, data, use.na=TRUE)
 #=> [4,] ""                    "just@an.email"
 
 }
-
