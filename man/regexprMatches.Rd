@@ -64,4 +64,3 @@ regexprMatches(matchResults, data)
 \seealso{
 \code{\link{regexprCapture}} \code{\link{regex}}
 }
-

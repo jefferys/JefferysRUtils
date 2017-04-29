@@ -33,4 +33,3 @@ in the merged list being different. If \code{keepOrder = TRUE} is set, then
 the order of elements in the first list is kept with the duplicated elements
 from the second dropped.
 }
-

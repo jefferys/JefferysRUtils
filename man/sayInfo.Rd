@@ -2,13 +2,14 @@
 % Please edit documentation in R/FutileLoggerUtils.R
 \docType{data}
 \name{sayInfo}
-\alias{OFF}
-\alias{sayDebug}
-\alias{sayError}
-\alias{sayFatal}
 \alias{sayInfo}
 \alias{sayTrace}
+\alias{sayDebug}
+\alias{sayInfo}
 \alias{sayWarn}
+\alias{sayError}
+\alias{sayFatal}
+\alias{OFF}
 \title{Log to multiple loggers (with different thresholds)}
 \format{An object of class \code{integer} of length 1.}
 \usage{
@@ -112,5 +113,5 @@ a threshold of \code{WARN}, \code{INFO}, \code{DEBUG} or \code{TRACE}.
 \code{FATAL} \code{ERROR}, \code{WARN}, \code{INFO}, \code{DEBUG} or
 \code{TRACE}.
 }}
-\keyword{datasets}
 
+\keyword{datasets}

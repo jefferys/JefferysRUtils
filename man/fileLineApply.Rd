@@ -132,6 +132,7 @@ is too small this may be inefficient in both time and memory.
   indices or logicals vectors can be used with \code{fileFilterApply} which
   will return the elements instead of an index or logical vector.
 }
+
 \examples{
 ### Tiny file to parse (auto-deleted on exit)
 content <- c( "One line", "Two lines.", "", "Four" )
@@ -214,4 +215,3 @@ fileLineApply( fileName, function (x) { lengths(strsplit(x, "\\\\s+")) == 1 },
 #> [1] "Four"
 
 }
-
