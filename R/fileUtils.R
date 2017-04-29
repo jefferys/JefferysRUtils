@@ -1,6 +1,10 @@
 # Functions for working with file contents, i.e. reading and writing.
 # Paths and file metadata functions should be elsewhere.
 
+makeTempFile <- function() {
+   return(NULL)
+}
+
 #' Read a file's lines in as vector
 #'
 #' Essentially a convenience wrapper around \code{\link{readLines}}. Reads a

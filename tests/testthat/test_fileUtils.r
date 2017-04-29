@@ -1,5 +1,13 @@
 context( "Testing file utils" )
 
+describe( "makeTempFile", {
+   it( "smoke tests", {
+      expect_silent( makeTempFile() )
+   })
+   describe("default parameters", {
+   })
+})
+
 describe( "slurp()", {
    normalArray <- c("# File Description", "Data Line",
                     "# Commented out",    "",          "Empty Line Prior and after", "")
