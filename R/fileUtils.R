@@ -1,9 +1,68 @@
 # Functions for working with file contents, i.e. reading and writing.
 # Paths and file metadata functions should be elsewhere.
 
-makeTempFile <- function( lines= character(0) ) {
-   fileName <- tempfile()
-   writeLines(lines, fileName)
+
+#' Create a temporary text file
+#'
+#' Creates a temporary text file whose name will be unique and whose context is
+#' whatever lines of text are specified as a character vector. By default these
+#' are created in R's session temporary directory. This directory and all its
+#' contents are removed automatically when the R session ends. File names
+#' contain random characters to make them unique, a prefix and a suffix can be
+#' specified. An (existing) directory can also be specified, but unless the
+#' directory is a subdirectory of `tempdir()`, it will *not* be automatically
+#' removed.
+#'
+#' @param lines The lines of text to put into the file.
+#' @param namePrefix The constant part of the temporary file's name, defaults to
+#'   "temp". Normally followed by some random hex digits to ensure name is
+#'   unique.
+#' @param extension The file extension part of the temporary file's name,
+#'   defaults to ".txt". The "." must be explicitly specified; this is really
+#'   just a suffix.
+#' @param tempDir The directory the file will be created in. Defaults to R's
+#'   per-session temporary directory. If this is specified it must exist. If it
+#'   is not a sub-directory of the `tempdir()`, it will *not* be removed
+#'   automatically.
+#' @param eol The end of line character to use when writing content to the file.
+#'   Defaults to the R platform default. Note, this is not a separator; the last
+#'   line written to the file will be terminated with this character.
+#'
+#' @return Returns the full-path filename to the temporary text file, which has
+#'   been created with the provided content. This filename may not be in
+#'   canonical form. By default this will look like:
+#'   \<tempDir\>/temp\<random\>.txt. Can change the default namePrefix= "temp"
+#'   and the extension= ".txt" settings.
+#'
+#' @examples
+#' tempFile <- makeTempFile( c("one fish", "two fish") )
+#' readLines( tempFile )
+#' #> [1] "one fish" "two fish"
+#'
+#' # Can create files that use other platform line endings.
+#' # (readLines() converts automatically to two lines)
+#' file <- makeTempFile( c("one fish", "two fish"), eol="\r" )
+#' readLines( file )
+#' #> [1] "one fish" "two fish"
+#'
+#' # Can create files that use weird line endings
+#' file <- makeTempFile( c("one fish", "two fish"), eol=" <>< " )
+#' # Note: " <>< " is not a standard eol, so readLines() returns everything as one
+#' #   string, plus would warn about not ending file with a normal eol character
+#' #   if warn= FALSE was not set.
+#' readLines( file, warn= FALSE )
+#' #> [1] "one fish <>< two fish <>< "
+#'
+#' @export
+makeTempFile <- function( lines= character(0),
+                          namePrefix= "temp", extension= ".txt",
+                          tempDir= tempdir(), eol= "\n" ) {
+   if (! dir.exists( tempDir )) {
+      stop( paste0( "tempDir= directory does not exist: '", tempDir, "'" ), call. = FALSE )
+   }
+
+   fileName <- tempfile( pattern = namePrefix, tmpdir = tempDir, fileext= extension )
+   writeLines( text= lines, con= fileName, sep= eol )
    return( fileName )
 }
 
