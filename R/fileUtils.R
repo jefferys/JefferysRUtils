@@ -138,6 +138,77 @@ slurp <- function( file, commentString= NULL, skipLines= 0 ) {
 }
 
 
+#' Merge text files adding names
+#'
+#' Sequentially concatenates text files adding the source filename to the start
+#' of each line. Allows files to have headers if the number of header lines is
+#' known and the same in all files. Headers will be taken from the first file,
+#' others are ignored other than triggering a warning for each that does not
+#' match the first file. The output file path can be specified, or it will be
+#' created as a temporary file. Instead of prefixing source filenames, a vector
+#' of strings can be specified.
+#'
+#' It is possible to just concatenate files without a prefix if all applicable
+#' values are set to the empty string (i.e. \code{names}, \code{delim},
+#' and possibly \code{colName}.) A blank line for empty files will be included
+#' only if \code{keepEmpty} is set \code{TRUE}.
+#'
+#' @param inFiles *REQ* The file paths to concatenate.
+#' @param outFile The file paths to use for output. Defaults to a temporary file
+#'   named "<tempdir>/merged<random>.tmp". If the file already exists, it will be
+#'   overwritten.
+#' @param delim The separator between the prefixed file name column and the
+#'   source file lines. Defaults to a tab, \\t.
+#' @param headerLines The number of header lines. Defaults to 0. All files must
+#'   have the same number of header lines. It is an error if a file has fewer lines
+#'   than required by this parameter. A warning is generated for each file whose
+#'   header differ from the first.
+#' @param colName The header for the name column, if \code{headerLines} > 0. Every
+#'   *header* line will have this prefixed, separated by \code{delim}.
+#'   Default is FILE.
+#' @param keepEmpty Set \code{TRUE} to have empty files treated as if they contained a
+#'   single empty line. Results in a line in the output file with just the name
+#'   and \code{delim} By default empty files are ignored. For files with headers,
+#'   empty files are those that contain no lines other than the header (which
+#'   should end with an EOL character.).
+#' @param names The names to prefix to the output lines. By default this will be
+#'   the \code{inFiles}. Must be a vector of the same length as \code{inFiles}.
+#'
+#' @return Returns the output file name, important if the output is created as an
+#'   temp file.
+#'
+#' @section Errors:
+#'
+#' \describe{
+#'    \item{
+#'       \command{Must specify at least one input file.}
+#'    }{
+#'       If no files are specified, function will exit with error.
+#'    }
+#'    \item{
+#'       \command{Not enough lines in file to have expected header: "\var{file}".}
+#'    }{
+#'       There are fewer lines in the file  "\var{file}" than header lines, so
+#'       it can't possibly have the same header, let alone any data.
+#'    }
+#' }
+#' @section Errors:
+#'
+#' \describe{
+#'    \item{
+#'       \command{File headings differ between first file and "\var{file}"}
+#'    }{
+#'       If \code{headingLines} is set (> 0), that many lines will be read from
+#'       the first file and used as the heading in the output file. Each following
+#'       file is then checked to ensure it has the same heading, If the heading does
+#'       not match, this warning is signalled.
+#'    }
+#' }
+#'
+#' @examples
+#' # Create a couple of temp files to merge
+#'
+#' @export
 mergeFiles <- function(
    inFiles,
    outFile= tempfile(pattern= 'merged', fileext = ".tmp" ),
@@ -146,6 +217,10 @@ mergeFiles <- function(
    colName= "FILE",
    keepEmpty= FALSE
 ) {
+   if ( length(inFiles) < 1 ) {
+      stop( "Must specify at least one input file.")
+   }
+
    # Stand-alone connections remember file positions
    outCon <- file( outFile, open= "wt" )
 
