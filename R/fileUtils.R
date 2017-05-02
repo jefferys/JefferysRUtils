@@ -137,3 +137,63 @@ slurp <- function( file, commentString= NULL, skipLines= 0 ) {
    }
 }
 
+
+mergeFiles <- function(
+   inFiles,
+   outFile= tempfile(pattern= 'merged', fileext = ".tmp" ),
+   delim= "\t",
+   headerLines= 0L,
+   colName= "FILE",
+   keepEmpty= FALSE
+) {
+   # Stand-alone connections remember file positions
+   outCon <- file( outFile, open= "wt" )
+
+   header <- NULL
+
+   for( file in inFiles ) {
+
+      # Read and close as will handle data separately.
+      # Also grabbing first data line, if any, to handle empty files up front.
+      firstLines <- readLines( file, n= (headerLines + 1L) )
+      if ( length(firstLines) < headerLines ) {
+         stop( paste0( 'Not enough lines in file to have expected header: "',
+                       file, '".' ), call. = FALSE)
+      }
+
+      # Headers
+      if (headerLines > 0) {
+
+         # On first file, want to write headers, on future passes, just check them.
+         if (is.null(header)) {
+            header <- firstLines[1:headerLines]
+            writeLines( paste( colName, header, sep= delim ),
+                        con= outCon )
+         }
+         else {
+            repeatHeader <- firstLines[1:headerLines]
+            if (! identical(header, repeatHeader)) {
+               warning( paste0("File headings differ between first file and ", file),
+                        call. = FALSE )
+            }
+         }
+      }
+
+      # If no data, unless keepEmpty was set to TRUE, done, whether have headers or not.
+      if ( length(firstLines) == headerLines && ! keepEmpty) {
+         next
+      }
+
+      # If not done with file, want to write the rest of the data, even if was
+      # empty. Empty files or files with just one line will be reported the same,
+      # which why we checked explicitly earlier. Read twice to advance file
+      # position pointer and skip header, if any.
+      inCon <- file( file, open= 'rt' )
+      readLines( inCon, n= headerLines )
+      writeLines( paste( file, readLines(con= inCon), sep= delim), con= outCon )
+      close(inCon)
+   }
+
+   close(outCon)
+   return(outFile)
+}

@@ -9,17 +9,17 @@ describe( "makeTempFile", {
          file <- makeTempFile()
          expect_true( file.exists( file ))
       })
-      describe( "Created file is empty by default", {
-         file <- makeTempFile()
-         it( "Returns an empty file", {
-            got <- file.size(file)
-            want <- 0
-            expect_equal( got, want )
+   })
+   describe( "Creates file is empty by default", {
+      file <- makeTempFile()
+      it( "Returns an empty file", {
+         got <- file.size(file)
+         want <- 0
+         expect_equal( got, want )
 
-            got <- readLines(file)
-            want <- character(0)
-            expect_equal( got, want )
-         })
+         got <- readLines(file)
+         want <- character(0)
+         expect_equal( got, want )
       })
    })
    describe("lines= parameter", {
@@ -260,25 +260,186 @@ describe( "slurp()", {
 })
 
 describe( "mergeFiles()", {
-  a <- c("File a, line 1", "File a, line 2", "File a, line 3")
-  b <- c("File b, line 1", "File b, line 2", "File b, line 3")
-  c <- c("File c, line 1", "File c, line 2", "File c, line 3")
-  describe( "All defaults", {
-     describe( "inFiles= parameter" {
-        describe( "merging files without headers" ) {
-           it( "Merges 2 files adding filenames as first column.", {
-              a2 <- makeTempFile( a[1:2] )
-              b2 <- makeTempFile( b[1:2] )
-              out <- tempFile()
+   describe( "Files without headers", {
+      contentA <- c( "One fish,", "two fish," )
+      contentB <- c( "red fish,", "blue fish." )
+      inFileA <- makeTempFile( contentA, "inFileA" )
+      inFileB <- makeTempFile( contentB, "inFileB" )
+      outFile <- tempfile( pattern= "mergedOut", fileext= ".txt" )
+      emptyFileA <- makeTempFile()
+      emptyFileB <- makeTempFile()
+      blankFileA <- makeTempFile( c("",""))
+      blankFileB <- makeTempFile( c(""))
 
-              ret <- mergeFiles( c(a2, b2), out )
-              expect_null(ret)
+      describe("Minimal behavior", {
+         it( "Smoke tests", {
+            fileList <- c(inFileA, inFileB)
 
-              got <- readLines(out)
-              want <- c( paste(a2, a[1:2], sep= "\t"), paste(b2, b[1:2], sep= "\t" ))
-              expect_equal( got, want )
-           })
-        }
-     })
-  })
+            expect_silent( got <- mergeFiles( fileList ))
+
+            expect_true( file.exists( got ))
+         })
+      })
+      describe( "inFiles= (mandatory parameter)", {
+         describe( "Default merging of files (without headers)", {
+            describe( "Normal text file merging", {
+               fileList <- c(inFileA, inFileB)
+               outFileName <- mergeFiles( fileList )
+
+               it( "Cat files to a temp file, prefixing <filename> and tab.", {
+                  got <- readLines(outFileName)
+                  want <- c( paste( inFileA, contentA, sep="\t" ),
+                             paste( inFileB, contentB, sep="\t" ))
+                  expect_equal(got, want)
+               })
+               it( "Default filename has expected name", {
+                  got <- outFileName
+                  wantRE <- file.path( tempdir(), 'merged.+\\.tmp$' )
+                  expect_match( got, wantRE )
+               })
+            })
+            describe( "weird text file merging",{
+               it( "Creates an empty file if no files to merge", {
+                  fileName <- mergeFiles( character(0) )
+
+                  expect_true( file.exists( fileName ))
+
+                  got <- readLines(fileName)
+                  want <- character(0)
+                  expect_equal(got, want)
+               })
+               it( "Can merge just 'one' input file", {
+                  outFileName <- mergeFiles( inFileA )
+
+                  got <- readLines(outFileName)
+                  want <- paste( inFileA, contentA, sep="\t" )
+                  expect_equal(got, want)
+               })
+               it( "Does not record any line for empty files by default", {
+                  outFileName <- mergeFiles( c(emptyFileA, emptyFileB) )
+                  got <- readLines(outFileName)
+                  want <- character(0)
+                  expect_equal(got, want)
+               })
+               it( "Keeps empty lines even when file is all empty lines", {
+                  outFileName <- mergeFiles( c(blankFileA, blankFileB) )
+                  got <- readLines(outFileName)
+                  want <- paste0( c(blankFileA, blankFileA, blankFileB), sep= "\t")
+                  expect_equal(got, want)
+
+                  outFileName <- mergeFiles( c(blankFileB) )
+                  got <- readLines(outFileName)
+                  want <- paste0( c(blankFileB), sep= "\t")
+                  expect_equal(got, want)
+               })
+               it( "Handles multiple kinds of weird input files", {
+                  outFileName <- mergeFiles( c(blankFileA, emptyFileA, blankFileB, inFileA) )
+                  got <- readLines(outFileName)
+                  want <- c( paste0( c(blankFileA, blankFileA, blankFileB), sep= "\t"),
+                             paste( inFileA, contentA, sep="\t" ))
+                  expect_equal(got, want)
+               })
+            })
+         })
+      })
+      describe( "outFile= optional output file name parameter", {
+         it( "Overrides default output file name when used", {
+            fileList <- c(inFileA, inFileB)
+            outFileName <- mergeFiles( fileList, outFile )
+
+            expect_equal( outFileName, outFile )
+         })
+         it( "Outputs expected content to the named file", {
+            fileList <- c(inFileA, inFileB)
+            outFileName <- mergeFiles( fileList, outFile= outFile )
+
+            got <- readLines(outFile)
+            want <- c( paste( inFileA, contentA, sep="\t" ),
+                       paste( inFileB, contentB, sep="\t" ))
+            expect_equal(got, want)
+         })
+      })
+      describe( "keepEmpty= boolean option for reporting blank files", {
+         it( "Adds a line for empty files when set true.", {
+            fileList <- c(emptyFileA, emptyFileB)
+            mergeFiles( fileList, outFile, keepEmpty= TRUE )
+
+            got <- readLines( outFile )
+            want <- paste0( c(emptyFileA, emptyFileB), sep= "\t" )
+         })
+      })
+      describe( "delim= text option for filename column delimiter", {
+         it(  "Uses delim to separate the prefixed filename column", {
+            fileList <- c(inFileA, inFileB)
+            outFileName <- mergeFiles( fileList, delim=' ' )
+
+            got <- readLines(outFileName)
+            want <- c( paste( inFileA, contentA, sep=" " ),
+                       paste( inFileB, contentB, sep=" " ))
+            expect_equal(got, want)
+         })
+         it(  "+ output=. Works as expected if also specify output= ", {
+            fileList <- c(inFileA, emptyFileA, inFileB)
+            outFile <- tempfile()
+            outFileName <- mergeFiles( fileList, outFile= outFile, delim=':' )
+
+            got <- readLines(outFile)
+            want <- c( paste( inFileA, contentA, sep=":" ),
+                       paste( inFileB, contentB, sep=":" ))
+            expect_equal(got, want)
+         })
+         it(  "+ keepEmpty=. Works as expected if also specify keepEmpty= ", {
+            fileList <- c(inFileA, emptyFileA, inFileB)
+            outFileName <- mergeFiles( fileList, keepEmpty= TRUE, delim=':' )
+
+            got <- readLines(outFileName)
+            want <- c( paste( inFileA, contentA, sep=":" ),
+                       paste( emptyFileA, "", sep=":" ),
+                       paste( inFileB, contentB, sep=":" ))
+            expect_equal(got, want)
+         })
+      })
+   })
+   describe( "Files with headers (header= is set to non-null)", {
+      header <- "DESC\tTHING"
+      contentA <- c("One\tfish,", "two\tfish,")
+      contentB <- c("red\tfish,", "blue\tfish,")
+      inFileA <- makeTempFile( c( header, contentA ))
+      inFileB <- makeTempFile( c( header, contentB ))
+      outFile <- tempfile( pattern= "mergedOutWithHeader", fileext= ".txt" )
+      emptyFileA <- makeTempFile(header)
+      emptyFileB <- makeTempFile(header)
+      blankFileA <- makeTempFile( c(header, "", ""))
+      blankFileB <- makeTempFile( c(header, ""))
+
+      describe("Minimal behavior", {
+         it( "Smoke tests", {
+            fileList <- c(inFileA, inFileB)
+
+            expect_silent( got <- mergeFiles( fileList ))
+
+            expect_true( file.exists( got ))
+         })
+      })
+      describe( "inFiles= (mandatory parameter)", {
+         describe( "Merging of normal files with header)", {
+            fileList <- c(inFileA, inFileB)
+            outFileName <- mergeFiles( fileList, headerLines=1 )
+
+            it( "Cat files to a temp file, prefixing <filename> and tab.", {
+               got <- readLines(outFileName)
+               want <- c( paste(  "FILE",   header, sep="\t" ),
+                          paste( inFileA, contentA, sep="\t" ),
+                          paste( inFileB, contentB, sep="\t" ))
+               expect_equal(got, want)
+            })
+            it( "Default filename has expected name", {
+               got <- outFileName
+               wantRE <- file.path( tempdir(), 'merged.+\\.tmp$' )
+               expect_match( got, wantRE )
+            })
+         })
+
+      })
+   })
 })
