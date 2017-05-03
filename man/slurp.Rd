@@ -11,7 +11,7 @@ slurp(file, commentString = NULL, skipLines = 0)
 
 \item{commentString}{If specified, any line beginning with this comment
 string will be dropped (leading whitespace is ignored). This is parsed as a
-regualr expression, but that shouldn't be a problem for most normal line
+regular expression, but that shouldn't be a problem for most normal line
 comment strings (\code{"#"}, \code{"##"}, \code{"//"}, \code{";"}), leading
 whitespace is ignored. If null or empty, will be ignored. Backslashes
 probably need to be doubled.}
