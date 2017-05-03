@@ -77,7 +77,7 @@ makeTempFile <- function( lines= character(0),
 #'
 #' @param commentString If specified, any line beginning with this comment
 #'   string will be dropped (leading whitespace is ignored). This is parsed as a
-#'   regualr expression, but that shouldn't be a problem for most normal line
+#'   regular expression, but that shouldn't be a problem for most normal line
 #'   comment strings (\code{"#"}, \code{"##"}, \code{"//"}, \code{";"}), leading
 #'   whitespace is ignored. If null or empty, will be ignored. Backslashes
 #'   probably need to be doubled.
@@ -191,8 +191,17 @@ slurp <- function( file, commentString= NULL, skipLines= 0 ) {
 #'       There are fewer lines in the file  "\var{file}" than header lines, so
 #'       it can't possibly have the same header, let alone any data.
 #'    }
+#'    \item{
+#'       \command{Parameters inFiles= and names= must be vectors of the same length.}
+#'    }{
+#'       Since names are being used instead of file paths in the output file, it
+#'       does not make sense to allow wrapping here. If you want the same name for
+#'       multiple files or the same file with multiple names, just include it in
+#'       the relevant parameter more than once.
+#'    }
 #' }
-#' @section Errors:
+#'
+#' @section Warnings:
 #'
 #' \describe{
 #'    \item{
@@ -201,17 +210,48 @@ slurp <- function( file, commentString= NULL, skipLines= 0 ) {
 #'       If \code{headingLines} is set (> 0), that many lines will be read from
 #'       the first file and used as the heading in the output file. Each following
 #'       file is then checked to ensure it has the same heading, If the heading does
-#'       not match, this warning is signalled.
+#'       not match, this warning is signaled.
 #'    }
 #' }
 #'
 #' @examples
 #' # Create a couple of temp files to merge
+#' header <- "DESC | THING"
+#' contentA <- c("One | fish,", "two | fish;")
+#' contentB <- c("red | fish,", "blue | fish.")
+#' inFileA <- makeTempFile( c( header, contentA ))
+#' inFileB <- makeTempFile( c( header, contentB ))
+#' empty <- makeTempFile( header )
+#'
+#' # Merge files
+#' # tempFile <- mergeFiles( c(inFileA, empty, inFileB),
+#' #                        names= c("A", "B"), headerLines= 1L )
+#' # Error as not matching files to names
+#' tempFile <- mergeFiles( c(inFileA, empty, inFileB),
+#'                         names= c("A", "B", "C"), headerLines= 1L )
+#' readLines(tempFile)
+#' #> [1] "FILE\tDESC | THING"
+#' #> [2] "A\tOne | fish,"
+#' #> [3] "A\ttwo | fish;"
+#' #> [4] "C\tred | fish,"
+#' #> [5] "C\tblue | fish."
+#'
+#' tempFile <- mergeFiles(
+#'    c(inFileA, empty, inFileB), names= c("A", "B", "C"), headerLines= 1L,
+#'    colName= 'stanza', delim= ": ", keepEmpty= TRUE )
+#' readLines(tempFile)
+#' #> [1] "stanza: DESC | THING"
+#' #> [2] "A: One | fish,"
+#' #> [3] "A: two | fish;"
+#' #> [4] "B: "
+#' #> [5] "C: red | fish,"
+#' #> [6] "C: blue | fish."
 #'
 #' @export
 mergeFiles <- function(
    inFiles,
    outFile= tempfile(pattern= 'merged', fileext = ".tmp" ),
+   names= inFiles,
    delim= "\t",
    headerLines= 0L,
    colName= "FILE",
@@ -220,20 +260,23 @@ mergeFiles <- function(
    if ( length(inFiles) < 1 ) {
       stop( "Must specify at least one input file.")
    }
-
+   if ( length(inFiles) != length(names) ) {
+      stop( "Parameters inFiles= and names= must be vectors of the same length.")
+   }
    # Stand-alone connections remember file positions
    outCon <- file( outFile, open= "wt" )
 
    header <- NULL
 
-   for( file in inFiles ) {
+   for( fileNum in 1:length(inFiles) ) {
 
       # Read and close as will handle data separately.
       # Also grabbing first data line, if any, to handle empty files up front.
-      firstLines <- readLines( file, n= (headerLines + 1L) )
+      firstLines <- readLines( inFiles[fileNum], n= (headerLines + 1L) )
       if ( length(firstLines) < headerLines ) {
+         close( outCon )
          stop( paste0( 'Not enough lines in file to have expected header: "',
-                       file, '".' ), call. = FALSE)
+                       names[fileNum], '".' ), call.= FALSE)
       }
 
       # Headers
@@ -248,8 +291,8 @@ mergeFiles <- function(
          else {
             repeatHeader <- firstLines[1:headerLines]
             if (! identical(header, repeatHeader)) {
-               warning( paste0("File headings differ between first file and ", file),
-                        call. = FALSE )
+               warning( paste0( 'File headings differ between first file and "',
+                                inFiles[fileNum], '".' ), call.= FALSE )
             }
          }
       }
@@ -263,9 +306,9 @@ mergeFiles <- function(
       # empty. Empty files or files with just one line will be reported the same,
       # which why we checked explicitly earlier. Read twice to advance file
       # position pointer and skip header, if any.
-      inCon <- file( file, open= 'rt' )
+      inCon <- file( inFiles[fileNum], open= 'rt' )
       readLines( inCon, n= headerLines )
-      writeLines( paste( file, readLines(con= inCon), sep= delim), con= outCon )
+      writeLines( paste( names[fileNum], readLines(con= inCon), sep= delim), con= outCon )
       close(inCon)
    }
 

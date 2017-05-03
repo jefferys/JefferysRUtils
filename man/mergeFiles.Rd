@@ -5,7 +5,8 @@
 \title{Merge text files adding names}
 \usage{
 mergeFiles(inFiles, outFile = tempfile(pattern = "merged", fileext = ".tmp"),
-  delim = "\\t", headerLines = 0L, colName = "FILE", keepEmpty = FALSE)
+  names = inFiles, delim = "\\t", headerLines = 0L, colName = "FILE",
+  keepEmpty = FALSE)
 }
 \arguments{
 \item{inFiles}{*REQ* The file paths to concatenate.}
@@ -13,6 +14,9 @@ mergeFiles(inFiles, outFile = tempfile(pattern = "merged", fileext = ".tmp"),
 \item{outFile}{The file paths to use for output. Defaults to a temporary file
 named "<tempdir>/merged<random>.tmp". If the file already exists, it will be
 overwritten.}
+
+\item{names}{The names to prefix to the output lines. By default this will be
+the \code{inFiles}. Must be a vector of the same length as \code{inFiles}.}
 
 \item{delim}{The separator between the prefixed file name column and the
 source file lines. Defaults to a tab, \\t.}
@@ -31,9 +35,6 @@ single empty line. Results in a line in the output file with just the name
 and \code{delim} By default empty files are ignored. For files with headers,
 empty files are those that contain no lines other than the header (which
 should end with an EOL character.).}
-
-\item{names}{The names to prefix to the output lines. By default this will be
-the \code{inFiles}. Must be a vector of the same length as \code{inFiles}.}
 }
 \value{
 Returns the output file name, important if the output is created as an
@@ -69,8 +70,18 @@ only if \code{keepEmpty} is set \code{TRUE}.
       There are fewer lines in the file  "\var{file}" than header lines, so
       it can't possibly have the same header, let alone any data.
    }
+   \item{
+      \command{Parameters inFiles= and names= must be vectors of the same length.}
+   }{
+      Since names are being used instead of file paths in the output file, it
+      does not make sense to allow wrapping here. If you want the same name for
+      multiple files or the same file with multiple names, just include it in
+      the relevant parameter more than once.
+   }
+}
 }
 
+\section{Warnings}{
 
 
 \describe{
@@ -80,12 +91,42 @@ only if \code{keepEmpty} is set \code{TRUE}.
       If \code{headingLines} is set (> 0), that many lines will be read from
       the first file and used as the heading in the output file. Each following
       file is then checked to ensure it has the same heading, If the heading does
-      not match, this warning is signalled.
+      not match, this warning is signaled.
    }
 }
 }
 
 \examples{
 # Create a couple of temp files to merge
+header <- "DESC | THING"
+contentA <- c("One | fish,", "two | fish;")
+contentB <- c("red | fish,", "blue | fish.")
+inFileA <- makeTempFile( c( header, contentA ))
+inFileB <- makeTempFile( c( header, contentB ))
+empty <- makeTempFile( header )
+
+# Merge files
+# tempFile <- mergeFiles( c(inFileA, empty, inFileB),
+#                        names= c("A", "B"), headerLines= 1L )
+# Error as not matching files to names
+tempFile <- mergeFiles( c(inFileA, empty, inFileB),
+                        names= c("A", "B", "C"), headerLines= 1L )
+readLines(tempFile)
+#> [1] "FILE\\tDESC | THING"
+#> [2] "A\\tOne | fish,"
+#> [3] "A\\ttwo | fish;"
+#> [4] "C\\tred | fish,"
+#> [5] "C\\tblue | fish."
+
+tempFile <- mergeFiles(
+   c(inFileA, empty, inFileB), names= c("A", "B", "C"), headerLines= 1L,
+   colName= 'stanza', delim= ": ", keepEmpty= TRUE )
+readLines(tempFile)
+#> [1] "stanza: DESC | THING"
+#> [2] "A: One | fish,"
+#> [3] "A: two | fish;"
+#> [4] "B: "
+#> [5] "C: red | fish,"
+#> [6] "C: blue | fish."
 
 }
