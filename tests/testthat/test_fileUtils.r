@@ -1392,3 +1392,118 @@ describe( "mergeFiles()", {
       })
    })
 })
+
+describe( "is.absolutePath( paths ) - Test for absolute path", {
+   describe( "Smoke test", {
+      it( "Can be run without error using all defaults", {
+         expect_silent( is.absolutePath( "" ))
+      })
+   })
+   describe( "paths= REQ - File paths to check", {
+      files <- list(
+         normal= list(
+            val= list(
+               singleAbs= "/",
+               singleNotAbs= "bob",
+               multiAbs= c( "\\", "/bob", "\\bob" ),
+               multiNotAbs= c( "bob\\bob", "bob/bob", "bob" ),
+               multiMixed= c( "/", "bob" ),
+               tilde= c( "~", "~/bob", "~bob", "bob~bob" ),
+               windowsAbs= c(  "c:/", "D:\\", "C:\\bob", "d:/bob" ),
+               currentDot= c( c(".", "./", ".\\", "./bob", ".\\bob" )),
+               updirDotsAbs= c( c("..", "../", "..\\", "../bob", "..\\bob" )),
+               updirDotsNotAbs= c( c("bob/..", "bob/../bob", "bob\\..", "bob\\..\\bob" ))
+            ),
+            want= list(
+               singleAbs= TRUE,
+               singleNotAbs= FALSE,
+               multiAbs= c(T, T, T),
+               multiNotAbs= c(F, F, F),
+               multiMixed= c(T, F),
+               tilde= c( T, T, T, F ),
+               windowsAbs= c(T, T, T, T ),
+               currentDot= c(T, T, T, T, T ),
+               updirDotsAbs= c( T, T, T, T, T ),
+               updirDotsNotAbs= c( F, F, F, F )
+            )
+         ),
+         weird= list(
+            val= list(
+               null= NULL,
+               none= character( 0 ),
+               empty= "",
+               list= list( x= "hello" ),
+               anNA= NA,
+               NAs= c(NA, NA, "NA", "/NA"),
+               ints= c( 1L, 2L, NA ),
+               utfNonSep= c( "BETA_ß_", "ß", "/BETA_ß_", "\\ß" ),
+               invalidButTrue= "/[](){}''|;:::Invalid but absolute!"
+            ),
+            want= list(
+               null= logical(0),
+               none= logical( 0 ),
+               empty= FALSE,
+               list= FALSE,
+               anNA= FALSE,
+               NAs= c(F, F, F, T),
+               ints= c(F, F, F),
+               utfNonSep= c(F,F,T,T),
+               invalidButTrue= TRUE
+            )
+         )
+      )
+
+      describe( "Default value", {
+         it ("Has expected return value", {
+            succeed( "No default to test" )
+         })
+         it ("Has expected side effects", {
+            succeed( "No default to test" )
+         })
+      })
+      describe( "Normal values", {
+         values <- files$normal$val
+         want <- files$normal$want
+         tests <- names( values )
+
+         it ( "Is test data set up correctly", {
+            expect_equal( tests, names( want ))
+         })
+         it ("Has expected return value", {
+            for (test in tests) {
+               expect_equal( is.absolutePath( paths= values[[test]] ), want[[test]],
+                             info= test )
+            }
+         })
+         it ("Has expected side effects", {
+            succeed( "No side efects to test" )
+         })
+      })
+      describe( "Weird values", {
+         values <- files$weird$val
+         want <- files$weird$want
+         tests <- names( values )
+
+         it ( "Is test data set up correctly", {
+            expect_equal( tests, names( want ))
+         })
+         it ("Has expected return value", {
+            for (test in tests) {
+               expect_equal( is.absolutePath( paths= values[[test]] ), want[[test]],
+                             info= test )
+            }
+         })
+         it ("Has expected side effects", {
+            succeed( "No side efects to test" )
+         })
+      })
+      describe( "Bad values", {
+         it ("Fails as expected for bad values", {
+            succeed( "No bad values to test" )
+         })
+         it ("Has no side effects with error exit", {
+            succeed( "No bad values to test" )
+         })
+      })
+   })
+})

@@ -315,3 +315,42 @@ mergeFiles <- function(
    close(outCon)
    return(outFile)
 }
+
+#' Test for absolute path
+#'
+#' Checks a vector of paths to see if they are absolute paths. Returns a
+#' corresponding logical vector that is \code{TRUE} for absolute paths and
+#' \code{FALSE} for others. Implementation uses a regular expression so this
+#' may not always work correctly, especially in non-ascii settings. No
+#' checks are made to see if a path exists nor if it is even a valid path.
+#'
+#' @param paths A character vector to check to see if which are potentially
+#'   absolute paths.
+#'
+#' @return A logical vector that is \code{TRUE} for absolute \code{paths= },
+#'   \code{FALSE+} for most other things (including \code{NA} and empty string),
+#'   and an empty vector if \code{paths= } is empty or \code{NULL}.
+#'
+#' @examples
+#' # All absolute paths
+#' is.absolutePath( c( "~",  "/", "\\", "~/bob",  "/bob", "\\bob" ))
+#' is.absolutePath( c("C:\\", "c:/", "C:\\bob", "c:/bob" ))
+#' is.absolutePath( c(".", "./", ".\\", "./bob", ".\\bob" ))
+#' is.absolutePath( c(".", "./", ".\\", "./bob", ".\\bob" ))
+#' is.absolutePath( c("..", "../", "..\\", "../bob", "..\\bob" ))
+#' is.absolutePath( c("/[](){}''|;:::Invalid but absolute!" ))
+#'
+#' # None are absolute paths
+#' is.absolutePath( c("", "bob/../bob", "bob\\..\\bob" ))
+#' is.absolutePath( c("bob", "bob\\bob", "bob/bob", ".bob" ))
+#' is.absolutePath( c( NA, "NA", "BETA_ß_" ))
+#' is.absolutePath( list( x= "hello" ))
+#'
+#' # empty logical returned
+#' is.absolutePath( NULL )
+#' is.absolutePath( character( 0 ))
+#'
+#' @export
+is.absolutePath <- function( paths ) {
+   grepl( "^[~/\\]|^[A-Za-z]:[\\/]|^\\.(\\.)?$|^\\.(\\.)?[/\\]", paths )
+}
