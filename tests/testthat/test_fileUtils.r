@@ -1507,3 +1507,210 @@ describe( "is.absolutePath( paths ) - Test for absolute path", {
       })
    })
 })
+
+describe( "read.tsv( file ) - Tab separated value file reader", {
+   tsvFile <- makeTempFile( ext=".tsv", lines= c(
+      "H1\tH2\tH3",
+      "A\t1\tTRUE",
+      "B\t2\tFALSE"
+   ))
+   tsvDF <- data.frame( H1=c("A", "B"), H2=c(1, 2), H3=c(TRUE, FALSE),
+                        stringsAsFactors=FALSE)
+   describe( "Smoke test", {
+      it( "Can be run without error using all defaults", {
+         expect_silent( read.tsv(tsvFile) )
+      })
+   })
+   describe( "Parameter testing", {
+      describe( "'file=' parameter (required)", {
+         it( "Loads data from specified file into a data frame", {
+            got <- read.tsv(tsvFile)
+            want <- tsvDF
+            expect_equal( got, want )
+         })
+         describe( "Errors thrown for bad values", {
+            it( "Errors if file not found.", {
+               badFile <- tempfile()
+               expect_false( file.exists( badFile ))
+               errorRE <- "No such file '.+'\\."
+               expect_error( read.tsv( badFile ), errorRE )
+            })
+            it( "Errors if file is empty.", {
+               badFile <- makeTempFile( lines="", eol="" )
+               errorRE <- "no lines available in input"
+               expect_error( read.tsv( badFile ), errorRE )
+            })
+         })
+         describe( "Weird file contents work", {
+            it( "Works if file has only a header line", {
+               file <- makeTempFile( ext=".tsv", lines= c(
+                  "H1\tH2\tH3"
+               ))
+               df <- data.frame( H1=logical(0), H2=logical(0), H3=logical(0),
+                                 stringsAsFactors= FALSE )
+
+               got <- read.tsv( file )
+               want <- df
+               expect_equal( got, want )
+            })
+            it( "Works if file has only one column", {
+               file <- makeTempFile( ext=".tsv", lines= c(
+                  "H1",
+                  "A",
+                  "B"
+               ))
+               df <- data.frame( H1=c("A", "B"), stringsAsFactors=FALSE)
+
+               got <- read.tsv( file )
+               want <- df
+               expect_equal( got, want )
+            })
+            it( "Works if file has only one column, and it is just a header", {
+               file <- makeTempFile( ext=".tsv", lines= c( "H1" ))
+               df <- data.frame( H1=logical(0), stringsAsFactors=FALSE)
+               got <- read.tsv( file )
+               want <- df
+               expect_equal( got, want )
+            })
+         })
+      })
+      describe( "'header= FALSE' parameter", {
+         it( "Works with explicit default.", {
+            got <- read.tsv(tsvFile, header=TRUE)
+            want <- tsvDF
+            expect_equal( got, want )
+         })
+         it( "Can read files without header correctly", {
+            noHeadTsvFile <- makeTempFile( ext=".tsv", lines= c(
+               "A\t1\tTRUE",
+               "B\t2\tFALSE"
+            ))
+            noHeadTsvDF <- data.frame( V1=c("A", "B"), V2=c(1, 2), V3=c(TRUE, FALSE),
+                                       stringsAsFactors= FALSE )
+
+            got <- read.tsv( noHeadTsvFile, header=FALSE )
+            want <- noHeadTsvDF
+            expect_equal( got, want )
+         })
+         describe( "Weird file contents work", {
+            it( "Works if file has only a data line", {
+               file <- makeTempFile( ext=".tsv", lines= c(
+                  "A\t1\tTRUE"
+               ))
+               df <- data.frame( V1="A", V2=1, V3=TRUE, stringsAsFactors= FALSE )
+               got <- read.tsv( file, header= FALSE )
+               want <- df
+               expect_equal( got, want )
+            })
+            it( "Works if file has only one column", {
+               file <- makeTempFile( ext=".tsv", lines= c("A", "B") )
+               df <- data.frame( V1=c("A", "B"), stringsAsFactors=FALSE)
+
+               got <- read.tsv( file, header=FALSE )
+               want <- df
+               expect_equal( got, want )
+            })
+            it( "Works if file has only one column, and it is just a data element", {
+               file <- makeTempFile( ext=".tsv", lines= c( "A" ))
+               df <- data.frame( V1="A", stringsAsFactors=FALSE)
+
+               got <- read.tsv( file, header=FALSE )
+               want <- df
+               expect_equal( got, want )
+            })
+         })
+      })
+      describe( "'sep= \"\t\"' parameter", {
+         it( "Can read files with alternate separator", {
+            ssvFile <- makeTempFile( ext=".ssv", lines= c(
+               "H1 H2 H3",
+               "A 1 TRUE",
+               "B 2 FALSE"
+            ))
+            ssvDF <- data.frame( H1=c("A", "B"), H2=c(1, 2), H3=c(TRUE, FALSE),
+                                 stringsAsFactors=FALSE)
+
+            got <- read.tsv( ssvFile, sep=" " )
+            want <- ssvDF
+            expect_equal( got, want )
+         })
+         it( "Works with explicit default.", {
+            got <- read.tsv(tsvFile, sep="\t")
+            want <- tsvDF
+            expect_equal( got, want )
+         })
+         it( "Works with header= FALSE.", {
+            noHeadSsvFile <- makeTempFile( ext=".ssv", lines= c(
+               "A 1 TRUE",
+               "B 2 FALSE"
+            ))
+            noHeadSsvDF <- data.frame( V1=c("A", "B"), V2=c(1, 2), V3=c(TRUE, FALSE),
+                                 stringsAsFactors=FALSE)
+
+            got <- read.tsv(noHeadSsvFile, header=FALSE, sep=" ")
+            want <- noHeadSsvDF
+            expect_equal( got, want )
+         })
+      })
+      describe( "'stringsAsFactors= FALSE' parameter", {
+         it( "Can read string columns in as factor.", {
+            tsvFactorFile <- makeTempFile( ext=".ssv", lines= c(
+               "H1\tH2\tH3",
+               "A\t1\tTRUE",
+               "B\t2\tFALSE"
+            ))
+            tsvFactorDF <- data.frame( H1=c("A", "B"), H2=c(1, 2), H3=c(TRUE, FALSE))
+
+            got <- read.tsv( tsvFactorFile, stringsAsFactors= TRUE )
+            want <- tsvFactorDF
+            expect_equal( got, want )
+         })
+         it( "Works with explicit default.", {
+            got <- read.tsv(tsvFile, stringsAsFactors= FALSE)
+            want <- tsvDF
+            expect_equal( got, want )
+         })
+         it( "Works with non-default settings", {
+            noHeadTsvFactorFile <- makeTempFile( ext=".ssv", lines= c(
+               "A 1 TRUE",
+               "B 2 FALSE"
+            ))
+            noHeadTsvFactorDF <- data.frame( V1=c("A", "B"), V2=c(1, 2), V3=c(TRUE, FALSE))
+
+            got <- read.tsv(noHeadTsvFactorFile, header= FALSE, sep=" ", stringsAsFactors= TRUE)
+            want <- noHeadTsvFactorDF
+            expect_equal( got, want )
+         })
+      })
+      describe( "'...' - pass through to read.tables(...) works", {
+         it( "Can set column names", {
+            tsvFile <- makeTempFile( ext=".tsv", lines= c(
+               "H1\tH2\tH3",
+               "A\t1\tTRUE",
+               "B\t2\tFALSE"
+            ))
+            newColDF <- data.frame( A=c("A", "B"), B=c(1, 2), C=c(TRUE, FALSE),
+                                 stringsAsFactors=FALSE)
+            got <- read.tsv(tsvFile, col.names=c( "A", "B", "C" ))
+            want <- newColDF
+            expect_equal( got, want )
+         })
+         it( "Works with other parmaeter changes", {
+            noHeadTsvFactorFile <- makeTempFile( ext=".ssv", lines= c(
+               "A 1 TRUE",
+               "B 2 FALSE"
+            ))
+            newColnoHeadTsvFactorDF <- data.frame( A=c("A", "B"), B=c(1, 2), C=c(TRUE, FALSE))
+            got <- read.tsv(noHeadTsvFactorFile, header=FALSE, sep=" ", stringsAsFactors=TRUE,
+                            col.names=c( "A", "B", "C" ))
+            want <- newColnoHeadTsvFactorDF
+            expect_equal( got, want )
+         })
+         it( "Errors if parameter not used by read.tables", {
+            wantErrorRE <- "unused argument"
+            expect_error( read.tsv( tsvFile, foo="bar" ), wantErrorRE )
+         })
+      })
+   })
+
+})
