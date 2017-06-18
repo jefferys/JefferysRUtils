@@ -354,3 +354,69 @@ mergeFiles <- function(
 is.absolutePath <- function( paths ) {
    grepl( "^[~/\\]|^[A-Za-z]:[\\/]|^\\.(\\.)?$|^\\.(\\.)?[/\\]", paths )
 }
+
+#' Read table-like files into a data frame.
+#'
+#' This is a convenience wrapper around \code{\link{read.table}} for reading
+#' tab delimited files. Parsing is the same as with
+#' \code{\link{read.table}}, except the separator is \code{"\t"}, headers are by
+#' default assumed to be present, and strings are automatically read in as
+#' strings. You can change these defaults or any other \code{\link{read.table}}
+#' parameter as they are passed through via \code{...}, but you should probably
+#' use the actual \code{\link{read.table}} function if you change \code{sep}.
+#'
+#' @param file The path to the tab-delimited file.
+#' @param header Default is \code{TRUE} as most table-like files have headers.
+#' @param sep The separator defaults to \code{"\t"} for these tab-delimited files.
+#' @param stringsAsFactors Set \code{TRUE} to convert string columns to factors.
+#' @param ... Passes other parameters through to \code{\link{read.table}}
+#'
+#' @return A data frame corresponding to the *.tsv file as specified by the
+#' parameters above and the defaults from \code{\link{read.table}}. See
+#' \code{\link{read.tables}} for details.
+#'
+#' It is a fatal error if the file does not exist, can not be read, or is empty.
+#'
+#' @seealso read.table
+#' @examples
+#' # Create a temp.tsv file to read
+#' tsvFile <- makeTempFile( ext=".tsv", lines= c(
+#'     "name\tval\tok",
+#'     "A\t1\tTRUE",
+#'     "B\t2\tFALSE"
+#' ))
+#' read.tsv( tsvFile )
+#' #>   name val    ok
+#' #> 1    A   1  TRUE
+#' #> 2    B   2 FALSE
+#'
+#' # A temp.tsv file without a header
+#' tsvFile <- makeTempFile( ext=".tsv", lines= c(
+#'     "A\t1\tTRUE",
+#'     "B\t2\tFALSE"
+#' ))
+#' read.tsv( tsvFile )
+#' #>   V1 V2    V3
+#' #> 1  A  1  TRUE
+#' #> 2  B  2 FALSE
+#'
+#' # Pass-through setting column names.
+#' tsvFile <- makeTempFile( ext=".tsv", lines= c(
+#'     "A\t1\tTRUE",
+#'     "B\t2\tFALSE"
+#' ))
+#' read.tsv( tsvFile, header=FALSE, col.names= c( "name", "val", "ok" ))
+#' #>   name val    ok
+#' #> 1    A   1  TRUE
+#' #> 2    B   2 FALSE
+#' @export
+read.tsv <- function ( file, header=TRUE, sep= "\t",
+                       stringsAsFactors= FALSE, ... ) {
+   if (! file.exists(file)) {
+      stop( "No such file '" %p% file %p% "'." )
+   }
+   df <- read.table( file=file, header=header, sep= sep,
+                     stringsAsFactors= stringsAsFactors, ... )
+   rownames(df) <- NULL
+   df
+}
