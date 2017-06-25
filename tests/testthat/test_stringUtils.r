@@ -535,6 +535,11 @@ describe( "toChar", {
          got <- toChar( data )
          expect_equal(got, want)
       })
+      it( "Works for single empty string", {
+         got <- toChar( "" )
+         want <- ""
+         expect_equal( got, want )
+      })
    })
    describe( "Optional parameter drop= TRUE", {
       it( "Has the expected default (TRUE)", {

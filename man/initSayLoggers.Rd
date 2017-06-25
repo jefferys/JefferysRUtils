@@ -62,4 +62,3 @@ parameters.
 \seealso{
 futile.logger::flog.layout, futile.logger::flog.logger
 }
-
