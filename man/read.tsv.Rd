@@ -20,7 +20,7 @@ read.tsv(file, header = TRUE, sep = "\\t", stringsAsFactors = FALSE, ...)
 \value{
 A data frame corresponding to the *.tsv file as specified by the
 parameters above and the defaults from \code{\link{read.table}}. See
-\code{\link{read.tables}} for details.
+\code{\link{read.table}} for details.
 
 It is a fatal error if the file does not exist, can not be read, or is empty.
 }
@@ -64,6 +64,7 @@ read.tsv( tsvFile, header=FALSE, col.names= c( "name", "val", "ok" ))
 #>   name val    ok
 #> 1    A   1  TRUE
 #> 2    B   2 FALSE
+
 }
 \seealso{
 read.table
