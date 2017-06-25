@@ -86,6 +86,19 @@ describe( "fileBlockApply()", {
          )
          expect_equal(got, want)
       })
+      it( "Uneven chunks and growing a too-small initial list", {
+         got <- fileBlockApply( integerFile, function (x) {
+            y <- as.numeric(x)
+            y[y > 5]
+         }, chunkSize= 4, growStart= 1, growX= 1, growAdd= 1, unlist=FALSE
+         )
+         y <- as.numeric(integerFileContent)
+         want <- list( (y[1:4])[(y[1:4]) > 5],
+                       (y[5:8])[(y[5:8]) > 5],
+                       (y[9:10])[(y[9:10]) > 5]
+         )
+         expect_equal(got, want)
+      })
       it( "Manually combining blocks", {
          got <- sum( fileBlockApply( integerFile, "length", chunkSize= 4))
          want <- length(integerFileContent)
@@ -119,6 +132,24 @@ describe( "fileBlockApply()", {
                                 chunkSize= 3, filter=TRUE)
          want <- integerFileContent[c(3,6,9,10)] # These are strings!
          expect_equal(got, want)
+      })
+   })
+   describe( "Throws errors when expected", {
+      describe( "parameter errors", {
+         wantErrorRE <- "chunkSize may not be 0\\."
+         expect_error( fileBlockApply( chunkSize= 0 ), wantErrorRE)
+
+         wantErrorRE <- "growStart must be >= 1\\."
+         expect_error( fileBlockApply( growStart= 0), wantErrorRE)
+
+         wantErrorRE <- "growX must be >= 1\\."
+         expect_error( fileBlockApply( growX= 0 ), wantErrorRE)
+
+         wantErrorRE <- "growAdd must be >= 0\\."
+         expect_error( fileBlockApply( growAdd= -1 ), wantErrorRE)
+
+         wantErrorRE <- "must have growX > 1 or growAdd > 0\\."
+         expect_error( fileBlockApply( growX= 1, growAdd= 0 ), wantErrorRE)
       })
    })
 })
@@ -196,6 +227,13 @@ describe( "fileLineApply()", {
          want <- list(nchar(textFileContent[1:2]), nchar(textFileContent[3:4]))
          expect_equal(got, want)
       })
+      it( "Uneven chunks and growing a too-small initial list", {
+         got <- fileLineApply( textFile, "nchar", chunkSize=2,
+                               growStart= 1, growX= 1, growAdd= 1,unlist=FALSE )
+         want <- list(nchar(textFileContent[1:2]), nchar(textFileContent[3:4]))
+         expect_equal(got, want)
+      })
+
       it( "Block structure is preserved with elements as list if unlist= FALSE and .simplify= FALSE ", {
          got <- fileLineApply( textFile, "nchar", chunkSize=2, unlist=FALSE, .simplify=FALSE )
          want <- list( as.list( nchar( textFileContent[1:2] )), as.list( nchar( textFileContent[3:4] )))
@@ -223,6 +261,24 @@ describe( "fileLineApply()", {
             want <- textFileContent[lengths(strsplit(textFileContent, "\\s+")) == 1]
             expect_equal(got, want)
          })
+      })
+   })
+   describe( "Throws errors when expected", {
+      describe( "parameter errors", {
+         wantErrorRE <- "chunkSize may not be 0\\."
+         expect_error( fileLineApply( chunkSize= 0 ), wantErrorRE)
+
+         wantErrorRE <- "growStart must be >= 1\\."
+         expect_error( fileLineApply( growStart= 0), wantErrorRE)
+
+         wantErrorRE <- "growX must be >= 1\\."
+         expect_error( fileLineApply( growX= 0 ), wantErrorRE)
+
+         wantErrorRE <- "growAdd must be >= 0\\."
+         expect_error( fileLineApply( growAdd= -1 ), wantErrorRE)
+
+         wantErrorRE <- "must have growX > 1 or growAdd > 0\\."
+         expect_error( fileLineApply( growX= 1, growAdd= 0 ), wantErrorRE)
       })
    })
 })

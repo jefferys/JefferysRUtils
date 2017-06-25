@@ -206,7 +206,7 @@ fileBlockApply <- function( con, FUN, ...,
    if (growStart < 1) { stop( "growStart must be >= 1." ) }
    if (growX < 1) { stop( "growX must be >= 1." ) }
    if (growAdd < 0) { stop( "growAdd must be >= 0." ) }
-   if (growX == 1 && growAdd ==0) { stop( "must have growX > 1 or growAdd > 0." )}
+   if (growX <= 1 && growAdd <= 0) { stop( "must have growX > 1 or growAdd > 0." )}
 
    if (is.character(con)) {
       con <- file(con)
@@ -482,7 +482,7 @@ fileLineApply <- function( con, FUN, ...,
    if (growStart < 1) { stop( "growStart must be >= 1." ) }
    if (growX < 1) { stop( "growX must be >= 1." ) }
    if (growAdd < 0) { stop( "growAdd must be >= 0." ) }
-   if (growX == 1 && growAdd ==0) { stop( "must have growX > 1 or growAdd > 0." )}
+   if (growX <= 1 && growAdd <= 0) { stop( "must have growX > 1 or growAdd > 0." )}
 
    if (is.character(con)) {
       con <- file(con)
