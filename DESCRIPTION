@@ -1,7 +1,7 @@
 Package: JefferysRUtils
 Type: Package
 Title: My bag of tricks for R coding
-Version: 0.0.4
+Version: 0.0.4.9000
 Author: Stuart R. Jefferys
 Maintainer: Stuart R. Jefferys <srj@unc.edu>
 Description: A collection of utilities that I use in R code. Each is too small to
