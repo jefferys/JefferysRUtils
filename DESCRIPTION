@@ -1,12 +1,12 @@
 Package: JefferysRUtils
 Type: Package
 Title: My bag of tricks for R coding
-Version: 0.0.4.9000
+Version: 0.0.5
 Author: Stuart R. Jefferys
 Maintainer: Stuart R. Jefferys <srj@unc.edu>
 Description: A collection of utilities that I use in R code. Each is too small to
    warrant their own package, they are relatively unrelated, and depending on
-   them all as separate utility packages is to many dependencies for now. May
+   them all as separate utility packages is too many dependencies for now. May
    split some out later, so be warned.
 License: MIT + file LICENSE
 LazyData: TRUE
