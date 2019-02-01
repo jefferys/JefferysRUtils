@@ -5,7 +5,6 @@
 \alias{sayInfo}
 \alias{sayTrace}
 \alias{sayDebug}
-\alias{sayInfo}
 \alias{sayWarn}
 \alias{sayError}
 \alias{sayFatal}
@@ -13,23 +12,23 @@
 \title{Log to multiple loggers (with different thresholds)}
 \format{An object of class \code{integer} of length 1.}
 \usage{
-sayTrace(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayTrace(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
-sayDebug(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayDebug(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
-sayInfo(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayInfo(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
-sayWarn(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayWarn(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
-sayError(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayError(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
-sayFatal(msg, ..., name = paste0(packageName(env = parent.frame()), c(".file",
-  ".console")), capture = FALSE)
+sayFatal(msg, ..., name = paste0(packageName(env = parent.frame()),
+  c(".file", ".console")), capture = FALSE)
 
 OFF
 }

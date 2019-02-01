@@ -4,9 +4,9 @@
 \alias{mergeFiles}
 \title{Merge text files adding names}
 \usage{
-mergeFiles(inFiles, outFile = tempfile(pattern = "merged", fileext = ".tmp"),
-  names = inFiles, delim = "\\t", headerLines = 0L, colName = "FILE",
-  keepEmpty = FALSE)
+mergeFiles(inFiles, outFile = tempfile(pattern = "merged", fileext =
+  ".tmp"), names = inFiles, delim = "\\t", headerLines = 0L,
+  colName = "FILE", keepEmpty = FALSE)
 }
 \arguments{
 \item{inFiles}{*REQ* The file paths to concatenate.}

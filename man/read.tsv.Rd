@@ -4,7 +4,8 @@
 \alias{read.tsv}
 \title{Read table-like files into a data frame.}
 \usage{
-read.tsv(file, header = TRUE, sep = "\\t", stringsAsFactors = FALSE, ...)
+read.tsv(file, header = TRUE, sep = "\\t", stringsAsFactors = FALSE,
+  ...)
 }
 \arguments{
 \item{file}{The path to the tab-delimited file.}
