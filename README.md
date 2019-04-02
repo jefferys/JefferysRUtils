@@ -45,6 +45,11 @@ You have to initialize the file and screen loggers before use, then logging in t
 
 Currently only provides a version of the base S3 function `merge` that works on lists.
 
+### Project utilities
+
+* **`useResultsDir`** - Function to create a results directory. Supports a base directory in which
+the result directory is created, and distinguishes between initial use and use on reruns.
+
 ### File utilities
 
 To allow applying a function to file in one step, two apply-like functions are defined:
