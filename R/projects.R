@@ -28,13 +28,13 @@ useResultsDir <- function( base, dir, rerun= FALSE ) {
          stop( sprintf(
             paste( sep="\t",
                "Aborting: Dir not found: \"%s\".",
-               "On rerun, output directory path must exist."
+               "On rerun, output directory path must exist.\n"
             ), path
          ))
       }
       else {
          warning( sprintf(
-            "Warning - Rerun is reusing existing directory: \"%s\".",
+            "Warning - Rerun is reusing existing directory: \"%s\".\n",
             path
          ))
       }
@@ -43,7 +43,7 @@ useResultsDir <- function( base, dir, rerun= FALSE ) {
          stop( sprintf(
             paste( sep="\t",
                    "Aborting: Output dir already exists: \"%s\".",
-                   "Set rerun= TRUE to overwrite exising output."
+                   "Set rerun= TRUE to overwrite exising output.\n"
             ), path
          ))
       }
@@ -52,7 +52,7 @@ useResultsDir <- function( base, dir, rerun= FALSE ) {
             ok <- dir.create( base, recursive= TRUE, showWarnings= TRUE )
             if (! all( ok )) {
                stop( sprintf(
-                  "Aborting: Error creating base directory: \"%s\".",
+                  "Aborting: Error creating base directory: \"%s\".\n",
                   base
                ))
             }
@@ -60,7 +60,7 @@ useResultsDir <- function( base, dir, rerun= FALSE ) {
          ok <- dir.create( path, recursive= TRUE, showWarnings= TRUE )
          if (! all( ok )) {
             stop( sprintf(
-               "Aborting: Error creating output directory: \"%s\".",
+               "Aborting: Error creating output directory: \"%s\".\n",
                path
             ))
          }

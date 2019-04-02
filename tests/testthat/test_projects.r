@@ -88,7 +88,7 @@ describe( "useResultsDir", {
          dir.create( outDir, recursive= TRUE )
          expect_true( dir.exists( outDir ))
          wantRE <- paste0( "Warning - Rerun is reusing existing directory: \"",
-                           outDir, "\"\\." )
+                           outDir, "\"\\.\n" )
          expect_warning( got <- useResultsDir( base, "rerunDir", rerun= TRUE ), wantRE )
          expect_equal( got, outDir )
       })
@@ -101,7 +101,7 @@ describe( "useResultsDir", {
             outDir <- file.path( base, dir )
             dir.create( outDir, recursive= TRUE )
             wantRE <- paste0( "Aborting: Output dir already exists: \"",
-                              outDir, "\".\tSet rerun= TRUE to overwrite exising output.")
+                              outDir, "\".\tSet rerun= TRUE to overwrite exising output.\n")
             expect_error( useResultsDir(base, dir), wantRE )
          })
          it( "Is an error if can't create the base directory", {
@@ -112,7 +112,7 @@ describe( "useResultsDir", {
             expect_true( file.exists( fileBase ))
             expect_false( dir.exists( fileBase ))
 
-            wantErrorRE = "Aborting: Error creating base directory: \"" %p% fileBase %p% "\"."
+            wantErrorRE = "Aborting: Error creating base directory: \"" %p% fileBase %p% "\".\n"
             wantWarningRE = "already exists"
             expect_warning(
                expect_error( useResultsDir( fileBase, "aDir" ), wantErrorRE ),
@@ -128,7 +128,7 @@ describe( "useResultsDir", {
             expect_true( file.exists( fileDir ))
             expect_false( dir.exists( fileDir ))
 
-            wantErrorRE = "Aborting: Error creating output directory: \"" %p% fileDir %p% "\"."
+            wantErrorRE = "Aborting: Error creating output directory: \"" %p% fileDir %p% "\".\n"
             wantWarningRE = "already exists"
             expect_warning(
                expect_error( useResultsDir( base, dir ), wantErrorRE ),
@@ -142,7 +142,7 @@ describe( "useResultsDir", {
             dir <- "aDir"
             wantDir <- file.path( base, dir )
             wantErrorRE <- "Aborting: Dir not found: \"" %p% wantDir %p%
-            "\".\tOn rerun, output directory path must exist."
+            "\".\tOn rerun, output directory path must exist.\n"
 
             expect_false( dir.exists( base ))
             expect_error( useResultsDir(base, dir, rerun= TRUE ), wantErrorRE )
