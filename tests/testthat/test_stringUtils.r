@@ -162,7 +162,8 @@ describe( "templateFill() when as.R is FALSE", {
       expect_equal(got, want)
    })
    it("Leaves non-template containing strings alone", {
-      templateText <- c( "{{ Start only.", "End only. }}", "{{", "}}" )
+      templateText <- c( "{{ Start only.", "End only. }}", "{{", "}}",
+                         "{{ multi start only {{.", "multi }}end}}only.")
       got<-templateFill(templateText);
       want <- templateText
       expect_equal(got, want)
@@ -478,14 +479,14 @@ describe( "templateFill() exception handling with and without as.R", {
       var1<-"dummy"
       expect_error( templateFill(templateText, delim=c('||', '||')), wantErrorRE)
    })
-   it("Dies if open delimiter embeded in the close delimiters", {
-      wantErrorRE = "Can't have one of the delimiters embeded in the other."
+   it("Dies if open delimiter embedded in the close delimiters", {
+      wantErrorRE = "Can't have one of the delimiters embedded in the other."
       templateText <- "|var1||"
       var1<-"dummy"
       expect_error( templateFill(templateText, delim=c('|', '||')), wantErrorRE)
    })
-   it("Dies if close delimiter embeded in the open delimiters", {
-      wantErrorRE = "Can't have one of the delimiters embeded in the other."
+   it("Dies if close delimiter embedded in the open delimiters", {
+      wantErrorRE = "Can't have one of the delimiters embedded in the other."
       templateText <- "$||var1||"
       var1<-"dummy"
       expect_error( templateFill(templateText, delim=c('$||', '||')), wantErrorRE)
