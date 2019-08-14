@@ -12,7 +12,7 @@ use named capture groups (\code{(?<name>...)}). Must double any \code{\\}
 used, e.g. zero or more whitespace characters would be \code{(\\s*)}}
 
 \item{data}{A vector of strings to search in. The rows in the returned matrix
-will be the captured text from succesive elements of this vector.}
+will be the captured text from successive elements of this vector.}
 
 \item{use.na}{Set TRUE to return NA as the matched text for capture groups
 that fail to match}
@@ -23,7 +23,7 @@ A matrix with one column per regular expression capture group and one
   used.
 }
 \description{
-Applies a (perl) regualr expression with capture groups to text strings and
+Applies a (perl) regular expression with capture groups to text strings and
 returns a matrix. Each matrix column is the text that one capture group
 matched (in order), each matrix row is the outcome of applying that regexp to
 one element of the text data. If a capture group does not match, the empty

@@ -112,7 +112,7 @@ regexprMatches <- function( matchResults, matchText, use.na=FALSE ) {
 
 #' Extract text with regexp capture groups
 #'
-#' Applies a (perl) regualr expression with capture groups to text strings and
+#' Applies a (perl) regular expression with capture groups to text strings and
 #' returns a matrix. Each matrix column is the text that one capture group
 #' matched (in order), each matrix row is the outcome of applying that regexp to
 #' one element of the text data. If a capture group does not match, the empty
@@ -127,7 +127,7 @@ regexprMatches <- function( matchResults, matchText, use.na=FALSE ) {
 #'   used, e.g. zero or more whitespace characters would be \code{(\\s*)}
 #'
 #' @param data A vector of strings to search in. The rows in the returned matrix
-#'   will be the captured text from succesive elements of this vector.
+#'   will be the captured text from successive elements of this vector.
 #'
 #' @param use.na Set TRUE to return NA as the matched text for capture groups
 #'   that fail to match
@@ -300,7 +300,7 @@ templateFill <- function( x,
    if (    grepl(delim[1], delim[2], fixed= TRUE)
            || grepl(delim[2], delim[1], fixed= TRUE)
    ) {
-      stop("Can't have one of the delimiters embeded in the other.")
+      stop("Can't have one of the delimiters embedded in the other.")
    }
    if (as.R) {
       warning( "Potential security risk:",
@@ -319,7 +319,7 @@ templateFill <- function( x,
    # Process each string in the input vector (possibly 0)
    for (stringNum in 1:length(x)) {
       # Any string without BOTH delimiters is just returned as is
-      if (starts[[stringNum]] == -1 || ends[[stringNum]] == -1) {
+      if (starts[[stringNum]][1] == -1 || ends[[stringNum]][1] == -1) {
          retVal[stringNum] <- x[stringNum]
          next
       }
@@ -341,18 +341,18 @@ templateFill <- function( x,
       # string pieces may be 0 if the string begins and/or ends with a delimiter
       pieces <- character(2 * length(starts[[stringNum]]) + 1)
 
-      # First piece is string up to first open deliminter
+      # First piece is string up to first open delimiter
       pieces[1] <- substr(x[stringNum], 1, starts[[stringNum]][1]-1)
 
-      # Remianng pieces come in pairs: between open and close delimiter (the
+      # Remaining pieces come in pairs: between open and close delimiter (the
       # text to process as a template), and, except for the last close delimiter,
-      # the part between the close delimiter and the next close delimiter.
+      # the part between the close delimiter and the next open delimiter.
       for (fieldNum in 1:length(starts[[stringNum]])) {
          # This pair of delimiters comes in the correct order, or die.
          if (starts[[stringNum]][fieldNum] > ends[[stringNum]][fieldNum]) {
             stop(delim[2], " before ", delim[1], " in string ", stringNum, ".")
          }
-         # This is not the last pair of delimiters, so check for nexted delimiters
+         # This is not the last pair of delimiters, so check for next delimiters
          # (the *next* start can't come before this open delimiter's paired close)
          if (length(starts[[stringNum]]) > fieldNum) {
             if (starts[[stringNum]][fieldNum + 1] < ends[[stringNum]][fieldNum]) {
@@ -366,7 +366,7 @@ templateFill <- function( x,
          field <- substr(x[stringNum], fieldStart, fieldEnd)
 
          if (as.R) {
-            # Evalute template text as R code
+            # Evaluate template text as R code
             pieces[2*fieldNum] <- eval(parse(text=field), envir= envir, enclos=envir)
          }
          else {
@@ -645,10 +645,10 @@ commonPrefix <- function (x, ignoreCase= FALSE, dropNA= FALSE) {
 #' @export
 commonSuffix <- function (x, ignoreCase= FALSE, dropNA= FALSE) {
    # Have to reverse strings to use same algorithm as for prefix. Doing so probably
-   # makes this significantly slower. Maybe another algoirithm would be better?
+   # makes this significantly slower. Maybe another algorithm would be better?
    revStrings <- revString( x )
 
-   # As reversed, common previx is actually the common suffix, reversed
+   # As reversed, common prefix is actually the common suffix, reversed
    revSuffix <- commonPrefix(revStrings, ignoreCase= ignoreCase, dropNA= dropNA)
    intToUtf8( rev( utf8ToInt( revSuffix )))
 }
