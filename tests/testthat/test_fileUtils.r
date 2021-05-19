@@ -1659,7 +1659,12 @@ describe( "read.tsv( file ) - Tab separated value file reader", {
                "A\t1\tTRUE",
                "B\t2\tFALSE"
             ))
-            tsvFactorDF <- data.frame( H1=c("A", "B"), H2=c(1, 2), H3=c(TRUE, FALSE))
+            tsvFactorDF <- data.frame(
+               H1=c("A", "B"),
+               H2=c(1, 2),
+               H3=c(TRUE, FALSE),
+               stringsAsFactors= TRUE
+            )
 
             got <- read.tsv( tsvFactorFile, stringsAsFactors= TRUE )
             want <- tsvFactorDF
@@ -1675,7 +1680,12 @@ describe( "read.tsv( file ) - Tab separated value file reader", {
                "A 1 TRUE",
                "B 2 FALSE"
             ))
-            noHeadTsvFactorDF <- data.frame( V1=c("A", "B"), V2=c(1, 2), V3=c(TRUE, FALSE))
+            noHeadTsvFactorDF <- data.frame(
+               V1=c("A", "B"),
+               V2=c(1, 2),
+               V3=c(TRUE, FALSE),
+               stringsAsFactors= TRUE
+            )
 
             got <- read.tsv(noHeadTsvFactorFile, header= FALSE, sep=" ", stringsAsFactors= TRUE)
             want <- noHeadTsvFactorDF
@@ -1700,7 +1710,12 @@ describe( "read.tsv( file ) - Tab separated value file reader", {
                "A 1 TRUE",
                "B 2 FALSE"
             ))
-            newColnoHeadTsvFactorDF <- data.frame( A=c("A", "B"), B=c(1, 2), C=c(TRUE, FALSE))
+            newColnoHeadTsvFactorDF <- data.frame(
+               A=c("A", "B"),
+               B=c(1, 2),
+               C=c(TRUE, FALSE),
+               stringsAsFactors= TRUE
+            )
             got <- read.tsv(noHeadTsvFactorFile, header=FALSE, sep=" ", stringsAsFactors=TRUE,
                             col.names=c( "A", "B", "C" ))
             want <- newColnoHeadTsvFactorDF
