@@ -5,7 +5,7 @@
 #' them all as separate utility packages is too many dependencies for now. May
 #' split some out later, so be warned.
 
-#' These are useful for me. Your milage may vary. Some are unfinished
+#' These are useful for me. Your mileage may vary. Some are unfinished
 #' and possibly broken
 #'
 #' @docType package

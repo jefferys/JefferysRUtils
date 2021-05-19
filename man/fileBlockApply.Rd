@@ -4,9 +4,20 @@
 \alias{fileBlockApply}
 \title{Apply a function by block to a file or connection}
 \usage{
-fileBlockApply(con, FUN, ..., chunkSize = -1L, unlist = TRUE,
-  filter = FALSE, growStart = 1e+05, growX = 2, growAdd = 0,
-  .warn = TRUE, .skipNul = FALSE, .encoding = "unknown")
+fileBlockApply(
+  con,
+  FUN,
+  ...,
+  chunkSize = -1L,
+  unlist = TRUE,
+  filter = FALSE,
+  growStart = 1e+05,
+  growX = 2,
+  growAdd = 0,
+  .warn = TRUE,
+  .skipNul = FALSE,
+  .encoding = "unknown"
+)
 }
 \arguments{
 \item{con}{The path to a text file to read, or a \code{\link{connection}}
@@ -57,14 +68,14 @@ space to store block results, increase total space by \code{growX * current
 blocks of space. By default this is 0.}
 
 \item{.warn}{Passed through to readLines as the \code{warn}
-parameter. By default every embedded nul triggers a warning. Can set this
+parameter. By default every embedded NUL triggers a warning. Can set this
 to FALSE if don't want a warning. Note, no warning is generated regardless
-of this flag when skipping nuls (i.e. when \code{.skipNul= TRUE}).}
+of this flag when skipping NUL characters (i.e. when \code{.skipNul= TRUE}).}
 
 \item{.skipNul}{Passed through to readLines as the \code{skipNul}
-parameter, By default every embedded nul terminates a line (and will then
+parameter, By default every embedded NUL terminates a line (and will then
 also trigger a warning by default, when \code{.warn= TRUE}). Setting this
-TRUE keeps reading past the null up to EOL, and does not warn.}
+TRUE keeps reading past the NUL up to EOL, and does not warn.}
 
 \item{.encoding}{Passed through to readLines as the \code{encoding}
 parameter.}
@@ -95,7 +106,7 @@ is too small this may be inefficient in both time and memory.
 \section{File reading}{
  The file is read with \code{\link{readLines}}; the
   \code{.} prefixed parameters are passed through to \code{readLines} and
-  allow controlling how embedded nul characters are treated and if the blocks
+  allow controlling how embedded NUL characters are treated and if the blocks
   passed to \code{FUN} are annotated with encoding information.
 
   Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
@@ -107,12 +118,12 @@ is too small this may be inefficient in both time and memory.
   included, but as this may signal truncated or incomplete data, a warning is
   generated.
 
-  Embedded nul characters will by default end their lines, but trigger a
-  warning that this is happening. No text between the null and the next EOL
+  Embedded NUL characters will by default end their lines, but trigger a
+  warning that this is happening. No text between the NUL and the next EOL
   marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
-  as returned. Turn off nul warnings if you expect null characters and want
-  this truncation (set \code{.warn= FALSE}). To ignore nul characters and
-  return all text in the line, dropping the nul characters, set
+  as returned. Turn off NUL warnings if you expect NUL characters and want
+  this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
+  return all text in the line, dropping the NUL characters, set
   \code{.skipNul= TRUE}. No warning is then generated.
 }
 
@@ -125,7 +136,7 @@ is too small this may be inefficient in both time and memory.
   basis, it either outputs or does not output an element from \code{in}.
   \code{grep} works similarly with \code{value=TRUE}. Functions that return
   indices may not be useful unless \code{filter= TRUE} is set as these
-  indices wii be relative to the chunk boundaries. If you want to use other
+  indices will be relative to the chunk boundaries. If you want to use other
   kinds of functions, you can always set unlist=FALSE and manually combine
   the results yourself.
 

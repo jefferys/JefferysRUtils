@@ -155,7 +155,7 @@ slurp <- function( file, commentString= NULL, skipLines= 0 ) {
 #'
 #' @param inFiles *REQ* The file paths to concatenate.
 #' @param outFile The file paths to use for output. Defaults to a temporary file
-#'   named "<tempdir>/merged<random>.tmp". If the file already exists, it will be
+#'   named `<tempdir()>/merged<random>.tmp`. If the file already exists, it will be
 #'   overwritten.
 #' @param delim The separator between the prefixed file name column and the
 #'   source file lines. Defaults to a tab, \\t.

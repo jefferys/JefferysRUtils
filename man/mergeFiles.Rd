@@ -4,15 +4,21 @@
 \alias{mergeFiles}
 \title{Merge text files adding names}
 \usage{
-mergeFiles(inFiles, outFile = tempfile(pattern = "merged", fileext =
-  ".tmp"), names = inFiles, delim = "\\t", headerLines = 0L,
-  colName = "FILE", keepEmpty = FALSE)
+mergeFiles(
+  inFiles,
+  outFile = tempfile(pattern = "merged", fileext = ".tmp"),
+  names = inFiles,
+  delim = "\\t",
+  headerLines = 0L,
+  colName = "FILE",
+  keepEmpty = FALSE
+)
 }
 \arguments{
 \item{inFiles}{*REQ* The file paths to concatenate.}
 
 \item{outFile}{The file paths to use for output. Defaults to a temporary file
-named "<tempdir>/merged<random>.tmp". If the file already exists, it will be
+named `<tempdir()>/merged<random>.tmp`. If the file already exists, it will be
 overwritten.}
 
 \item{names}{The names to prefix to the output lines. By default this will be
@@ -112,11 +118,11 @@ empty <- makeTempFile( header )
 tempFile <- mergeFiles( c(inFileA, empty, inFileB),
                         names= c("A", "B", "C"), headerLines= 1L )
 readLines(tempFile)
-#> [1] "FILE\\tDESC | THING"
-#> [2] "A\\tOne | fish,"
-#> [3] "A\\ttwo | fish;"
-#> [4] "C\\tred | fish,"
-#> [5] "C\\tblue | fish."
+#> [1] "FILE\tDESC | THING"
+#> [2] "A\tOne | fish,"
+#> [3] "A\ttwo | fish;"
+#> [4] "C\tred | fish,"
+#> [5] "C\tblue | fish."
 
 tempFile <- mergeFiles(
    c(inFileA, empty, inFileB), names= c("A", "B", "C"), headerLines= 1L,

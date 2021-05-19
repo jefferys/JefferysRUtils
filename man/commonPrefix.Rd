@@ -37,7 +37,7 @@ commonPrefix( c( "ABCDE", "ABC", "" ))
 commonPrefix( c( "ABCDE", "ABC", NA ))
 #=> [1] NA
 
-commonPrefix( c( "A\\u00dfCDE", "A\\u00dfC", "A\\u00dfc" ))
+commonPrefix( c( "A\u00dfCDE", "A\u00dfC", "A\u00dfc" ))
 #=> [1] "Aß"
 
 commonPrefix( c("ABCDE", "ABC", "ABc" ), ignoreCase= TRUE )

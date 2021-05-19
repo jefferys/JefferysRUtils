@@ -4,10 +4,22 @@
 \alias{fileLineApply}
 \title{Apply a function to a file or connection}
 \usage{
-fileLineApply(con, FUN, ..., chunkSize = -1L, unlist = TRUE,
-  filter = FALSE, growStart = 1e+05, growX = 2, growAdd = 0,
-  .warn = TRUE, .skipNul = FALSE, .encoding = "unknown",
-  .simplify = TRUE, .USE.NAMES = FALSE)
+fileLineApply(
+  con,
+  FUN,
+  ...,
+  chunkSize = -1L,
+  unlist = TRUE,
+  filter = FALSE,
+  growStart = 1e+05,
+  growX = 2,
+  growAdd = 0,
+  .warn = TRUE,
+  .skipNul = FALSE,
+  .encoding = "unknown",
+  .simplify = TRUE,
+  .USE.NAMES = FALSE
+)
 }
 \arguments{
 \item{con}{The path to a text file to read, or a \code{\link{connection}}
@@ -34,7 +46,7 @@ even though there are probably less than chunkSize lines left. The last
 line may, on rare occasions, not be read (this will trigger a warning. See
 "File reading", below.)}
 
-\item{unlist}{Internally, the results from each block is saved separaetly in
+\item{unlist}{Internally, the results from each block is saved separately in
 a list element. By default these are flattened before returning to hide the
 file chunking. To preserve this list by block, set \code{unlist= FALSE}.}
 
@@ -59,14 +71,14 @@ space to store block results, increase total space by \code{growX * current
 blocks of space. By default this is 0.}
 
 \item{.warn}{Passed through to readLines as the \code{warn}
-parameter. By default every embedded nul triggers a warning. Can set this
+parameter. By default every embedded NUL triggers a warning. Can set this
 to FALSE if don't want a warning. Note, no warning is generated regardless
-of this flag when skipping nuls (i.e. when \code{.skipNul= TRUE}).}
+of this flag when skipping NUL characters (i.e. when \code{.skipNul= TRUE}).}
 
 \item{.skipNul}{Passed through to readLines as the \code{skipNul}
-parameter, By default every embedded nul terminates a line (and will then
+parameter, By default every embedded NUL terminates a line (and will then
 also trigger a warning by default, when \code{.warn= TRUE}). Setting this
-TRUE keeps reading past the null up to EOL, and does not warn.}
+TRUE keeps reading past the NUL up to EOL, and does not warn.}
 
 \item{.encoding}{Passed through to readLines as the \code{encoding}
 parameter.}
@@ -88,8 +100,8 @@ The result of applying \code{FUN} to each line in the file or
 \description{
 Applies a function to each line of a file or connection, processing each line
 as an element of a character vector. Sequentially reads blocks of
-\code{chunkSize} lines from the file or connection using \code{readLines},
-\code{sapply(USE.NAMES=FALSE)}ing the \code{FUN} across each block and
+\code{chunkSize} lines from the file or connection using \code{readLines} and
+\code{sapply(USE.NAMES=FALSE)} to apply the \code{FUN} across each block and
 returning the combined result from all blocks. This implementation allows
 moderately efficient reading and processing of large files, potentially
 larger than would fit in memory. With the default setting of \code{chunkSize
@@ -104,7 +116,7 @@ is too small this may be inefficient in both time and memory.
 \section{File reading}{
  The file is read with \code{\link{readLines}}; the
   \code{.} prefixed parameters are passed through to \code{readLines} and
-  allow controlling how embedded nul characters are treated and if the blocks
+  allow controlling how embedded NUL characters are treated and if the blocks
   passed to \code{FUN} are annotated with encoding information.
 
   Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
@@ -116,12 +128,12 @@ is too small this may be inefficient in both time and memory.
   included, but as this may signal truncated or incomplete data, a warning is
   generated.
 
-  Embedded nul characters will by default end their lines, but trigger a
-  warning that this is happening. No text between the null and the next EOL
+  Embedded NUL characters will by default end their lines, but trigger a
+  warning that this is happening. No text between the NUL and the next EOL
   marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
-  as returned. Turn off nul warnings if you expect null characters and want
-  this truncation (set \code{.warn= FALSE}). To ignore nul characters and
-  return all text in the line, dropping the nul characters, set
+  as returned. Turn off NUL warnings if you expect NUL characters and want
+  this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
+  return all text in the line, dropping the NUL characters, set
   \code{.skipNul= TRUE}. No warning is then generated.
 }
 

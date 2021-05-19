@@ -20,7 +20,7 @@ Reverse a string
 revString( "ABC" )
 #=> revString( "ABC" )
 
-revString( c( "ABC", "ABC", "A\\u00dfB", 123, "", "x", NA ))
+revString( c( "ABC", "ABC", "A\u00dfB", 123, "", "x", NA ))
 #=> [1] "CBA" "CBA" "BßA" "321" ""    "x"   NA
 
 revString( NULL )

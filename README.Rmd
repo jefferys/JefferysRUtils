@@ -54,8 +54,8 @@ Currently only provides a version of the base S3 function `merge` that works on 
 
 To allow applying a function to file in one step, two apply-like functions are defined:
 
-* `fileLineApply` applys a supplied function to each line of a file or connection (read as text). Basically implements `sapply(readlines(file), FUN, ...)`
-* `fileBlockApply` applys a supplied function to a vector of lines from a file or connection. . Basically implements `FUN(readlines(file), ...)`
+* `fileLineApply` applies a supplied function to each line of a file or connection (read as text). Basically implements `sapply(readlines(file), FUN, ...)`
+* `fileBlockApply` applies a supplied function to a vector of lines from a file or connection. . Basically implements `FUN(readlines(file), ...)`
 
 Both functions are implemented in a way that makes them work even on large files, possibly files larger than would otherwise fit in memory. Connections are supported so functions can be applied to compressed files or files
 being read from URLs. Additionally, a `filter` flag is provided to allow
@@ -91,7 +91,7 @@ fileLineApply( con, "parseKeyValues" )
 
 #### Files are read in chunks
 
-To support large files, these file apply functions read in a file in blocks of `chunkSize` lines, keeping only the results after processing a chunk. If only a few lines are being greped out of a file, the above should work on very large files. The default is set so all lines from a file are read in one chunk (most times files are small enough...), so setting this to some reasonable chunk size given available memory and file line size is needed for large files.
+To support large files, these file apply functions read in a file in blocks of `chunkSize` lines, keeping only the results after processing a chunk. E.g. this can work if only a few lines are being returned when applying grep() to a very large file. However, the default is set so all lines from a file are read in one chunk as most times files are small enough. Setting some reasonable chunk size given available memory and file line size is needed for large files.
 
 Internally, the results from each block are stored as a list element and are joined together only when results are returned. To get the raw list of results split by block, set `unlist=FALSE`. Joining results together is done with
 `unlist(recursive=FALSE)`, and this may do unexpected things if your results
@@ -159,7 +159,7 @@ fileBlockApply( con, "grep", pattern= "F", chunkSize= 2, filter= TRUE )
 
 #### Problems with unlisting
 
-If the results of `apply`ing a function to a line neither a list nor a single element vector, it is probably best to keep the block structure and manually merge results. Unlisting destroys non-list sub-structures like vectors or objects without remorse. It will interact especially problematically with `fileLineApply`, which simplifies to arrays when possible. Setting `.simplify=FALSE` will preserve per-line structure as a list.
+If the `apply` of a function to a line results in neither a list nor a single element vector, it is probably best to keep the block structure and manually merge results. Unlisting destroys non-list sub-structures like vectors or objects without remorse. It will interact especially problematically with `fileLineApply`, which simplifies to arrays when possible. Setting `.simplify=FALSE` will preserve per-line structure as a list.
 
 ``` {R}
 # Returns a vector for each line, simplifies into a matrix.
