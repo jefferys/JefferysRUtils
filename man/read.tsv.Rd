@@ -4,8 +4,7 @@
 \alias{read.tsv}
 \title{Read table-like files into a data frame.}
 \usage{
-read.tsv(file, header = TRUE, sep = "\\t", stringsAsFactors = FALSE,
-  ...)
+read.tsv(file, header = TRUE, sep = "\\t", stringsAsFactors = FALSE, ...)
 }
 \arguments{
 \item{file}{The path to the tab-delimited file.}
@@ -37,9 +36,9 @@ use the actual \code{\link{read.table}} function if you change \code{sep}.
 \examples{
 # Create a temp.tsv file to read
 tsvFile <- makeTempFile( ext=".tsv", lines= c(
-    "name\\tval\\tok",
-    "A\\t1\\tTRUE",
-    "B\\t2\\tFALSE"
+    "name\tval\tok",
+    "A\t1\tTRUE",
+    "B\t2\tFALSE"
 ))
 read.tsv( tsvFile )
 #>   name val    ok
@@ -48,8 +47,8 @@ read.tsv( tsvFile )
 
 # A temp.tsv file without a header
 tsvFile <- makeTempFile( ext=".tsv", lines= c(
-    "A\\t1\\tTRUE",
-    "B\\t2\\tFALSE"
+    "A\t1\tTRUE",
+    "B\t2\tFALSE"
 ))
 read.tsv( tsvFile )
 #>   V1 V2    V3
@@ -58,8 +57,8 @@ read.tsv( tsvFile )
 
 # Pass-through setting column names.
 tsvFile <- makeTempFile( ext=".tsv", lines= c(
-    "A\\t1\\tTRUE",
-    "B\\t2\\tFALSE"
+    "A\t1\tTRUE",
+    "B\t2\tFALSE"
 ))
 read.tsv( tsvFile, header=FALSE, col.names= c( "name", "val", "ok" ))
 #>   name val    ok

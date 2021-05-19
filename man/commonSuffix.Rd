@@ -37,7 +37,7 @@ commonSuffix( c( "ABCDE", "CDE", "" ))
 commonSuffix( c( "ABCDE", "ABCDE", NA ))
 #=> [1] NA
 
-commonSuffix( c( "A\\u00dfC", "A\\u00dfC", "a\\u00dfC" ))
+commonSuffix( c( "A\u00dfC", "A\u00dfC", "a\u00dfC" ))
 #=> [1] "ßC"
 
 commonSuffix( c("ABCDE", "CDE", "cDE" ), ignoreCase= TRUE )

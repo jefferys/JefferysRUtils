@@ -1,22 +1,30 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/jefferys/JefferysRUtils.svg?branch=master)](https://travis-ci.org/jefferys/JefferysRUtils)
 
-JefferysRUtils
-==============
+[![Travis-CI Build
+Status](https://travis-ci.org/jefferys/JefferysRUtils.svg?branch=master)](https://travis-ci.org/jefferys/JefferysRUtils)
 
-A collection of utilities. These are functions that are commonly used in R packages I write or that solve some tiny problem in a generic way but are too small to release as their own package. Kind of a dumping ground, actually. I expect that over time functions may migrate out of here to other packages.
+# JefferysRUtils
+
+A collection of utilities. These are functions that are commonly used in
+R packages I write or that solve some tiny problem in a generic way but
+are too small to release as their own package. Kind of a dumping ground,
+actually. I expect that over time functions may migrate out of here to
+other packages.
 
 Currently there are four main groupings of functions:
 
 -   String utilities
 -   List utilities
--   Logging utilities for use with the [`futile.logger`](https://CRAN.R-project.org/package=futile.logger) package
+-   Logging utilities for use with the
+    [`futile.logger`](https://CRAN.R-project.org/package=futile.logger)
+    package
 -   file utilities
 
 ### String utilities
 
-Most useful here are the character concatenation operators `%p%` and `%pp%` which act like paste0(x,y) and paste(x,y), respectively.
+Most useful here are the character concatenation operators `%p%` and
+`%pp%` which act like paste0(x,y) and paste(x,y), respectively.
 
 ``` r
 library("JefferysRUtils")
@@ -37,31 +45,42 @@ library("JefferysRUtils")
 
 ### Logging utilities
 
-Functions are provided to support logging to the file and the screen but filtering at different levels. This may be supported directly by futile.logger at some point.
+Functions are provided to support logging to the file and the screen but
+filtering at different levels. This may be supported directly by
+futile.logger at some point.
 
-You have to initialize the file and screen loggers before use, then logging in tandem is provided with separate logging commands, one for each level, e.g. `sayInfo("Message")`.
+You have to initialize the file and screen loggers before use, then
+logging in tandem is provided with separate logging commands, one for
+each level, e.g. `sayInfo("Message")`.
 
 ### List utilities
 
-Currently only provides a version of the base S3 function `merge` that works on lists.
-
-### Project utilities
-
-* **`useResultsDir`** - Function to create a results directory. Supports a base directory in which
-the result directory is created, and distinguishes between initial use and use on reruns.
+Currently only provides a version of the base S3 function `merge` that
+works on lists.
 
 ### File utilities
 
-To allow applying a function to file in one step, two apply-like functions are defined:
+To allow applying a function to file in one step, two apply-like
+functions are defined:
 
--   `fileLineApply` applys a supplied function to each line of a file or connection (read as text). Basically implements `sapply(readlines(file), FUN, ...)`
--   `fileBlockApply` applys a supplied function to a vector of lines from a file or connection. . Basically implements `FUN(readlines(file), ...)`
+-   `fileLineApply` applies a supplied function to each line of a file
+    or connection (read as text). Basically implements
+    `sapply(readlines(file), FUN, ...)`
+-   `fileBlockApply` applies a supplied function to a vector of lines
+    from a file or connection. . Basically implements
+    `FUN(readlines(file), ...)`
 
-Both functions are implemented in a way that makes them work even on large files, possibly files larger than would otherwise fit in memory. Connections are supported so functions can be applied to compressed files or files being read from URLs. Additionally, a `filter` flag is provided to allow returning values selected by a logical function (or for `fileBlockApply` an index returning function).
+Both functions are implemented in a way that makes them work even on
+large files, possibly files larger than would otherwise fit in memory.
+Connections are supported so functions can be applied to compressed
+files or files being read from URLs. Additionally, a `filter` flag is
+provided to allow returning values selected by a logical function (or
+for `fileBlockApply` an index returning function).
 
 #### Unix-like file grep
 
-For example, a simple file grep that returns lines from a (fake) file connection:
+For example, a simple file grep that returns lines from a (fake) file
+connection:
 
 ``` r
 content <- c( "One line", "Two lines.", "", "Four" )
@@ -72,7 +91,12 @@ fileBlockApply( con, "grep", pattern="line", value=TRUE )
 
 #### Complex function applied line by line
 
-Applying a function by line is often not necessary, may be simpler when a function is complex and may be faster as only requires one file pass. Here I have a function that converts a comma-separated string of key=integer entries into a named vector. I could rewrite the function to apply successive vector operations on a vector if inputs, but it easier to just apply the function.
+Applying a function by line is often not necessary, may be simpler when
+a function is complex and may be faster as only requires one file pass.
+Here I have a function that converts a comma-separated string of
+key=integer entries into a named vector. I could rewrite the function to
+apply successive vector operations on a vector if inputs, but it easier
+to just apply the function.
 
 ``` r
 content <- c( "A=1,B =2, c = 3", "C=4", "B=1,A=", "" )
@@ -103,11 +127,22 @@ fileLineApply( con, "parseKeyValues" )
 
 #### Files are read in chunks
 
-To support large files, these file apply functions read in a file in blocks of `chunkSize` lines, keeping only the results after processing a chunk. If only a few lines are being greped out of a file, the above should work on very large files. The default is set so all lines from a file are read in one chunk (most times files are small enough...), so setting this to some reasonable chunk size given available memory and file line size is needed for large files.
+To support large files, these file apply functions read in a file in
+blocks of `chunkSize` lines, keeping only the results after processing a
+chunk. E.g. this can work if only a few lines are being returned when
+applying grep() to a very large file. However, the default is set so all
+lines from a file are read in one chunk as most times files are small
+enough. Setting some reasonable chunk size given available memory and
+file line size is needed for large files.
 
-Internally, the results from each block are stored as a list element and are joined together only when results are returned. To get the raw list of results split by block, set `unlist=FALSE`. Joining results together is done with `unlist(recursive=FALSE)`, and this may do unexpected things if your results are matrices or each line is a vector.
+Internally, the results from each block are stored as a list element and
+are joined together only when results are returned. To get the raw list
+of results split by block, set `unlist=FALSE`. Joining results together
+is done with `unlist(recursive=FALSE)`, and this may do unexpected
+things if your results are matrices or each line is a vector.
 
-Note: Setting `chunkSize` to a small number is not something you should do, but it is done in this example for expository purposes.
+Note: Setting `chunkSize` to a small number is not something you should
+do, but it is done in this example for expository purposes.
 
 ``` r
 content <- c( "One line", "Two lines.", "", "Four" )
@@ -127,7 +162,8 @@ fileBlockApply( con, function (x) { lengths(strsplit(x, "\\s+")) > 1 },
 #> [1] FALSE FALSE
 ```
 
-If a function returns an index, it will be relative to the start of each block, not the file.
+If a function returns an index, it will be relative to the start of each
+block, not the file.
 
 ``` r
 # Returns index relative to chunk, if any match.
@@ -150,7 +186,10 @@ fileBlockApply( con, "grep", pattern= "F", chunkSize= 2, unlist= FALSE )
 
 #### Selection with filtering functions
 
-It is easy to select based on the result of a logical function by setting `filter= TRUE`. `fileBlockApply` also supports selection by index-returning functions. The block-relative offset is automatically handled, whether or not you keep the block structure
+It is easy to select based on the result of a logical function by
+setting `filter= TRUE`. `fileBlockApply` also supports selection by
+index-returning functions. The block-relative offset is automatically
+handled, whether or not you keep the block structure
 
 ``` r
 content <- c( "One line", "Two lines.", "", "Four" )
@@ -187,7 +226,13 @@ fileBlockApply( con, "grep", pattern= "F", chunkSize= 2, filter= TRUE )
 
 #### Problems with unlisting
 
-If the results of `apply`ing a function to a line neither a list nor a single element vector, it is probably best to keep the block structure and manually merge results. Unlisting destroys non-list sub-structures like vectors or objects without remorse. It will interact especially problematically with `fileLineApply`, which simplifies to arrays when possible. Setting `.simplify=FALSE` will preserve per-line structure as a list.
+If the `apply` of a function to a line results in neither a list nor a
+single element vector, it is probably best to keep the block structure
+and manually merge results. Unlisting destroys non-list sub-structures
+like vectors or objects without remorse. It will interact especially
+problematically with `fileLineApply`, which simplifies to arrays when
+possible. Setting `.simplify=FALSE` will preserve per-line structure as
+a list.
 
 ``` r
 # Returns a vector for each line, simplifies into a matrix.

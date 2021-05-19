@@ -4,10 +4,13 @@
 \alias{initSayLoggers}
 \title{Initialize default loggers}
 \usage{
-initSayLoggers(file = packageName(env = parent.frame()) \%p\% ".log",
-  fileLevel = WARN, consoleLevel = INFO,
+initSayLoggers(
+  file = packageName(env = parent.frame()) \%p\% ".log",
+  fileLevel = WARN,
+  consoleLevel = INFO,
   fileLayout = layout.format("~l [~t] ~m"),
-  consoleLayout = layout.format("~m"))
+  consoleLayout = layout.format("~m")
+)
 }
 \arguments{
 \item{file}{The name of the log file, by default \file{"\var{package}.log"}

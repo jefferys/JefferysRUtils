@@ -29,7 +29,7 @@ drop= FALSE is set, returns a list of character vectors (of single chars)
 named for the string. Duplicate names are fine.
 }
 \examples{
-toChar( c("ABC", "ABC", "A\\u00dfB", 123, "", "x", NA ) )
+toChar( c("ABC", "ABC", "A\u00dfB", 123, "", "x", NA ) )
 #=> $ABC
 #=> [1] "A" "B" "C"
 #=>

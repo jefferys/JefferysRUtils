@@ -4,8 +4,13 @@
 \alias{makeTempFile}
 \title{Create a temporary text file}
 \usage{
-makeTempFile(lines = character(0), namePrefix = "temp",
-  extension = ".txt", tempDir = tempdir(), eol = "\\n")
+makeTempFile(
+  lines = character(0),
+  namePrefix = "temp",
+  extension = ".txt",
+  tempDir = tempdir(),
+  eol = "\\n"
+)
 }
 \arguments{
 \item{lines}{The lines of text to put into the file.}
@@ -51,7 +56,7 @@ readLines( tempFile )
 
 # Can create files that use other platform line endings.
 # (readLines() converts automatically to two lines)
-file <- makeTempFile( c("one fish", "two fish"), eol="\\r" )
+file <- makeTempFile( c("one fish", "two fish"), eol="\r" )
 readLines( file )
 #> [1] "one fish" "two fish"
 

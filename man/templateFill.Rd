@@ -4,8 +4,12 @@
 \alias{templateFill}
 \title{Evaluate and fill string templates}
 \usage{
-templateFill(x, delim = c("{{", "}}"), as.R = FALSE,
-  envir = new.env(parent = parent.frame()))
+templateFill(
+  x,
+  delim = c("{{", "}}"),
+  as.R = FALSE,
+  envir = new.env(parent = parent.frame())
+)
 }
 \arguments{
 \item{x}{Vector of strings with fields containing variables or code to be
