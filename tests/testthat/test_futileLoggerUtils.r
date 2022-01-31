@@ -1,5 +1,3 @@
-context( "Logging with the say functions" )
-
 dateRE <- "\\[\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d\\]"
 
 describe( "Respects logger levels for each named logger provided.", {

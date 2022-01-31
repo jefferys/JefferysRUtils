@@ -1,5 +1,3 @@
-context( "Testing statUtils.R" )
-
 describe( "cdfDiff()", {
    describe( "parameter validation", {
       it( "Fails if any required parameter is missing", {

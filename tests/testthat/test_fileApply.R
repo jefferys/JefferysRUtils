@@ -1,5 +1,3 @@
-context("Testing the file*Apply family of functions.")
-
 describe( "fileBlockApply()", {
 
    # textFile and textFileContent

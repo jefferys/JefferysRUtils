@@ -1,5 +1,3 @@
-context("Testing the tests - expect functions")
-
 describe( "Checking equality including null with expect_equalOrNull", {
 	aList <- list(a=1, b=2)
 	bList <- list(b=2, a=1)

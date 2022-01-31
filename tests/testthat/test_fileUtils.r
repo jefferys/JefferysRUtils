@@ -1,5 +1,3 @@
-context( "Testing file utils" )
-
 describe( "makeTempFile", {
    describe("Minimal behavior", {
       it( "Smoke tests", {

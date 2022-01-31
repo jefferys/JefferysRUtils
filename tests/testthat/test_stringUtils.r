@@ -1,5 +1,3 @@
-context( "Testing stringUtils.R" )
-
 describe( "Binary paste operators %p% and %pp%", {
    it( "Joins without spaces using %p%.", {
       expect_equal( "a" %p% "b", "ab")

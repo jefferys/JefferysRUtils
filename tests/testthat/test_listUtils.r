@@ -1,5 +1,3 @@
-context("Testing list utils")
-
 describe( "merge() is extended to merge lists when everything has a name", {
    describe( "preconditions on lists being merged and the names of their elements", {
       it( "Errors when first element is not a list, if call explicitly", {

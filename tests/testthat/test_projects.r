@@ -1,5 +1,3 @@
-context( "Testing projects" )
-
 describe( "useResultsDir", {
    describe("Minimal behavior", {
       it( "Smoke test", {
