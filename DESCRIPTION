@@ -9,15 +9,15 @@ Description: A collection of utilities that I use in R code. Each is too small t
    them all as separate utility packages is too many dependencies for now. May
    split some out later, so be warned.
 License: MIT + file LICENSE
-LazyData: TRUE
 URL: http://github.com/jefferys/JefferysRUtils
 Imports:
    futile.logger,
-   utils
+   utils,
+   openssl
 Suggests:
     spelling,
     testthat
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
