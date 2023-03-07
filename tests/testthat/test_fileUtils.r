@@ -1,11 +1,17 @@
 describe( "makeTempFile", {
    describe("Minimal behavior", {
-      it( "Smoke tests", {
-         expect_silent( makeTempFile() )
+      it( "Doesn't smoke", {
+         expect_silent( got <- makeTempFile() )
+         if ( file.exists( got ) && ! dir.exists( got )) {
+            file.remove(got)
+         }
       })
       it( "Creates a file and returns its name", {
          file <- makeTempFile()
          expect_true( file.exists( file ))
+         if ( file.exists( file ) && ! dir.exists( file )) {
+            file.remove( file )
+         }
       })
    })
    describe( "Creates file is empty by default", {
@@ -18,6 +24,10 @@ describe( "makeTempFile", {
          got <- readLines(file)
          want <- character(0)
          expect_equal( got, want )
+
+         if ( file.exists( file ) && ! dir.exists( file )) {
+            file.remove(file)
+         }
       })
    })
    describe("lines= parameter", {
@@ -29,20 +39,10 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- content
             expect_equal( got, want )
-         })
-      })
-      describe( "Fallback default behavior", {
-         file <- makeTempFile()
-         it( "The empty file has NO content", {
-            got <- file.size(file)
-            want <- 0
-            expect_equal( got, want )
-         })
-         it( "Reading empty files back recapitulates the empty input", {
-            # Note - this might be a "testing the system test"
-            got <- readLines(file)
-            want <- character(0)
-            expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
       })
       describe( "Corner cases", {
@@ -53,6 +53,10 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- content
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
          it( "Can write just one line", {
             content <- "Make me a file please !"
@@ -61,6 +65,10 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- content
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
          it( "Can write one empty line", {
             file <- makeTempFile( lines= "" )
@@ -68,6 +76,10 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- ""
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
          it( "Can write single space", {
             file <- makeTempFile( ' ' )
@@ -75,13 +87,21 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- " "
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
-         it( "Can create empty files", {
+         it( "Creates empty file if empty content vector specified", {
             file <- makeTempFile( character(0) )
 
             got <- readLines(file)
             want <- character(0)
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
       })
    })
@@ -94,6 +114,10 @@ describe( "makeTempFile", {
 
             got <- scan( file, character(), sep="\n", quiet= TRUE )
             expect_equal( got, content )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
       })
       describe( "Non-platform EOL", {
@@ -105,6 +129,10 @@ describe( "makeTempFile", {
             got <- readLines(file)
             want <- content
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
          it( "eol= allows for non-standard line ending characters", {
             content <- c( "Line 1", "This is line 2", "3" )
@@ -114,12 +142,20 @@ describe( "makeTempFile", {
             # No EOL terminating file, so scan reads an extra empty string at end.
             want <- c( "Line", "1", "This", "is", "line", "2", "3", "" )
             expect_equal( got, want )
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
          it( "eol= allows for non-standard multi-character line endings", {
             file <- makeTempFile( c("one fish", "two fish"), eol=" <>< " )
             got <- readLines( file, warn= FALSE )
             want <- "one fish <>< two fish <>< "
             expect_equal( got, want)
+
+            if ( file.exists( file ) && ! dir.exists( file )) {
+               file.remove(file)
+            }
          })
       })
    })
@@ -131,27 +167,60 @@ describe( "makeTempFile", {
             gotFileName <- makeTempFile( content )
             wantRE <- file.path(tempdir(), 'temp.+.txt$' )
             expect_match( gotFileName, wantRE )
+
+            if ( file.exists( gotFileName ) && ! dir.exists( gotFileName )) {
+               file.remove(gotFileName)
+            }
          })
          it("generates different file names on each call", {
             fileName1 <- makeTempFile( content )
             fileName2 <- makeTempFile( content )
             expect_false( fileName1 == fileName2 )
+
+            if ( file.exists( fileName1 ) && ! dir.exists( fileName1 )) {
+               file.remove(fileName1)
+            }
+            if ( file.exists( fileName2 ) && ! dir.exists( fileName2 )) {
+               file.remove(fileName2)
+            }
          })
       })
       describe( "Changing the temp file name's conserved parts", {
-         dir <- tempdir()
-         nestedDir <- file.path( tempdir(), "innerDir" )
-         dir.create(nestedDir)
+         dir <- tempfile()
+         nestedDir <- file.path( dir, "innerDir" )
+         dir.create(nestedDir, recursive = TRUE)
 
          it( "can set different dir, prefix, and extension file name parts", {
             gotFileName <- makeTempFile( content, "deleteMe", ".text", tempDir <- nestedDir )
             wantRE <- file.path( nestedDir, 'deleteMe.+.text$' )
             expect_match( gotFileName, wantRE )
+
+            if ( file.exists( gotFileName ) && ! dir.exists( gotFileName )) {
+               file.remove(gotFileName)
+            }
+            if ( dir.exists( nestedDir ) && dir.exists( gotFileName )) {
+               file.remove(gotFileName)
+            }
          })
          it( "can set dir, prefix, and extension file name parts, and still get unique file", {
             gotFileName1 <- makeTempFile( content, "deleteMe", ".text", tempDir <- nestedDir )
             gotFileName2 <- makeTempFile( content, "deleteMe", ".text", tempDir <- nestedDir )
             expect_false( gotFileName1 == gotFileName2 )
+
+            if ( file.exists( gotFileName1 ) && ! dir.exists( gotFileName1 )) {
+               file.remove(gotFileName1)
+            }
+            if ( file.exists( gotFileName2 ) && ! dir.exists( gotFileName2 )) {
+               file.remove(gotFileName2)
+            }
+            if ( dir.exists( nestedDir ) &&
+                 length( dir( nestedDir, recursive= TRUE, all.files= TRUE )) == 0 ) {
+               file.remove(nestedDir)
+            }
+            if ( dir.exists( dir ) &&
+                 length( dir( dir, recursive= TRUE, all.files= TRUE )) == 0 ) {
+               file.remove(dir)
+            }
          })
 
       })
@@ -1726,4 +1795,18 @@ describe( "read.tsv( file ) - Tab separated value file reader", {
       })
    })
 
+})
+
+describe( "isDirPath()", {
+   describe( "examples", {
+      it( "By default, only false if not ending in '/' and not an existing directory", {
+         got <- isDirPath( c("./", ".", "noSuchDir/", "noSuchDir", "~", "*" ))
+         want <- c( TRUE, TRUE, TRUE, FALSE, TRUE, FALSE )
+      })
+     it( "With lexical=TRUE, only cares about ending '/'", {
+        got <- isDirPath( c( "./", ".", "noSuchDir/", "noSuchDir", "~", "*" ),
+                          lexical= TRUE )
+        want <- c( TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE )
+     })
+   })
 })
