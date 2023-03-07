@@ -119,24 +119,24 @@ logging function can generate a message with priority lower than \code{TRACE}
 }
 \section{Functions}{
 \itemize{
-\item \code{sayTrace}: Print a message to specified loggers with
+\item \code{sayTrace()}: Print a message to specified loggers with
 a threshold of \code{TRACE}.
 
-\item \code{sayDebug}: Print a message to specified loggers with
+\item \code{sayDebug()}: Print a message to specified loggers with
 a threshold of \code{DEBUG} or \code{TRACE}.
 
-\item \code{sayInfo}: Print a message to specified loggers with
+\item \code{sayInfo()}: Print a message to specified loggers with
 a threshold of \code{INFO}, \code{DEBUG} or \code{TRACE}.
 
-\item \code{sayWarn}: Print a message to specified loggers with
+\item \code{sayWarn()}: Print a message to specified loggers with
 a threshold of \code{WARN}, \code{INFO}, \code{DEBUG} or \code{TRACE}.
 
-\item \code{sayError}: Print a message to specified loggers with a threshold of
+\item \code{sayError()}: Print a message to specified loggers with a threshold of
 \code{ERROR}, \code{WARN}, \code{INFO}, \code{DEBUG} or \code{TRACE}.
 
-\item \code{sayFatal}: Print a message to specified loggers with a threshold of
+\item \code{sayFatal()}: Print a message to specified loggers with a threshold of
 \code{FATAL} \code{ERROR}, \code{WARN}, \code{INFO}, \code{DEBUG} or
 \code{TRACE}.
-}}
 
+}}
 \keyword{datasets}
