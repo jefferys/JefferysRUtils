@@ -14,19 +14,19 @@ paths that don't end in "/" but might already exist as directories.}
 }
 \value{
 Returns a logical vector, TRUE for paths to treat as directories,
-   FALSE otherwise.
+FALSE otherwise.
 }
 \description{
 If a path ends in "/" or exists and is a directory, it is a directory path. To
 do a pure lexical check, which just looks for the ending "/" and ignores the
-file system, set `lexical= TRUE`. Note that paths ending in "/" are directory
+file system, set \code{lexical= TRUE}. Note that paths ending in "/" are directory
 paths even when they don't exist and even if they could not be created due
 to illegal characters or the existence of a file with that name (sans the
-terminal "/"). e.g. `some/path` as a file does not affect `some/path/` being
+terminal "/"). e.g. \code{some/path} as a file does not affect \verb{some/path/} being
 reported as a directory.
 }
 \details{
-Any leading "~" is expanded a la `path.expand()`, but `Sys.glob()` is not used,
+Any leading "~" is expanded a la \code{path.expand()}, but \code{Sys.glob()} is not used,
 e.g. "*" is just a regular character.
 }
 \examples{
@@ -42,9 +42,9 @@ isDirPath( c( "./", ".", "noSuchDir/", "noSuchDir", "~", "*" ),
 
 }
 \seealso{
-`dir.exists()`: to just check if a directory exists.
-  `dirname()`: to extract the directory part of a file path (ignores end "/").
-  `Sys.glob()`: to expand glob patterns into a vector of paths (including
-    optionally adding a terminal "/" to directories).
-  `path.expand()`: to expand leading "~" to home directory, where supported.
+\code{dir.exists()}: to just check if a directory exists.
+\code{dirname()}: to extract the directory part of a file path (ignores end "/").
+\code{Sys.glob()}: to expand glob patterns into a vector of paths (including
+optionally adding a terminal "/" to directories).
+\code{path.expand()}: to expand leading "~" to home directory, where supported.
 }

@@ -443,11 +443,11 @@ read.tsv <- function ( file, header=TRUE, sep= "\t",
 #'    FALSE otherwise.
 #'
 #' @seealso
-#'   `dir.exists()`: to just check if a directory exists.
-#'   `dirname()`: to extract the directory part of a file path (ignores end "/").
-#'   `Sys.glob()`: to expand glob patterns into a vector of paths (including
+#' - `dir.exists()`: to just check if a directory exists.
+#' - `dirname()`: to extract the directory part of a file path (ignores end "/").
+#' - `Sys.glob()`: to expand glob patterns into a vector of paths (including
 #'     optionally adding a terminal "/" to directories).
-#'   `path.expand()`: to expand leading "~" to home directory, where supported.
+#' - `path.expand()`: to expand leading "~" to home directory, where supported.
 #'
 #' @examples
 #'
