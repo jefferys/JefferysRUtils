@@ -8,18 +8,18 @@ useResultsDir(base, dir, rerun = FALSE)
 }
 \arguments{
 \item{base}{The base directory to create a results directory in. Will be
-created (recursively) if needed, unless `rerun= TRUE` is set. May be
+created (recursively) if needed, unless \code{rerun= TRUE} is set. May be
 absolute or relative.}
 
-\item{dir}{The results directory under `base=` to be created (recursively).
-Must not exist unless `rerun= TRUE` is set. Must be relative to `base=`.}
+\item{dir}{The results directory under \verb{base=} to be created (recursively).
+Must not exist unless \code{rerun= TRUE} is set. Must be relative to \verb{base=}.}
 
-\item{rerun}{Set `TRUE` to reuse an existing run directory; it must already
+\item{rerun}{Set \code{TRUE} to reuse an existing run directory; it must already
 exist.}
 }
 \value{
 The path to the created (or existing) output directory,
-  `<base>/<outDir>`.
+\verb{<base>/<outDir>}.
 }
 \description{
 Make a directory for results.

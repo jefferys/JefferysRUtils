@@ -22,11 +22,11 @@ capture groups matching nothing, e.g. \code{(?<num>\\d*)}. Setting this
 }
 \value{
 A matrix with one column for each capture group (with matching
-  column name for named capture groups) and one row for each string in the
-  text vector matched to. The value of each cell is the text matched by the
-  named capture group. If any capture group does not match, all returned
-  strings are empty for that text vector element (row), or \code{NA} if
-  \code{use.na= TRUE}
+column name for named capture groups) and one row for each string in the
+text vector matched to. The value of each cell is the text matched by the
+named capture group. If any capture group does not match, all returned
+strings are empty for that text vector element (row), or \code{NA} if
+\code{use.na= TRUE}
 }
 \description{
 You probably want \code{\link{regexprCapture}} as it is likely you are trying

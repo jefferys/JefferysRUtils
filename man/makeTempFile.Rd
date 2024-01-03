@@ -25,7 +25,7 @@ just a suffix.}
 
 \item{tempDir}{The directory the file will be created in. Defaults to R's
 per-session temporary directory. If this is specified it must exist. If it
-is not a sub-directory of the `tempdir()`, it will *not* be removed
+is not a sub-directory of the \code{tempdir()}, it will \emph{not} be removed
 automatically.}
 
 \item{eol}{The end of line character to use when writing content to the file.
@@ -34,10 +34,10 @@ line written to the file will be terminated with this character.}
 }
 \value{
 Returns the full-path filename to the temporary text file, which has
-  been created with the provided content. This filename may not be in
-  canonical form. By default this will look like:
-  \<tempDir\>/temp\<random\>.txt. Can change the default namePrefix= "temp"
-  and the extension= ".txt" settings.
+been created with the provided content. This filename may not be in
+canonical form. By default this will look like:
+\<tempDir\>/temp\<random\>.txt. Can change the default namePrefix= "temp"
+and the extension= ".txt" settings.
 }
 \description{
 Creates a temporary text file whose name will be unique and whose context is
@@ -46,7 +46,7 @@ are created in R's session temporary directory. This directory and all its
 contents are removed automatically when the R session ends. File names
 contain random characters to make them unique, a prefix and a suffix can be
 specified. An (existing) directory can also be specified, but unless the
-directory is a subdirectory of `tempdir()`, it will *not* be automatically
+directory is a subdirectory of \code{tempdir()}, it will \emph{not} be automatically
 removed.
 }
 \examples{

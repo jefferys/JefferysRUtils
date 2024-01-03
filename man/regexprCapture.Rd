@@ -19,8 +19,8 @@ that fail to match}
 }
 \value{
 A matrix with one column per regular expression capture group and one
-  row per data element. Columns will be named if named capture groups are
-  used.
+row per data element. Columns will be named if named capture groups are
+used.
 }
 \description{
 Applies a (perl) regular expression with capture groups to text strings and

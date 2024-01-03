@@ -22,9 +22,9 @@ they are also comments.}
 }
 \value{
 The file's content as a string vector, one element per line, including
-  empty lines as empty strings, but excluding filtered lines. If no lines are
-  left after dropping comments and skipping the headers, will return
-  \code{character(0)}
+empty lines as empty strings, but excluding filtered lines. If no lines are
+left after dropping comments and skipping the headers, will return
+\code{character(0)}
 }
 \description{
 Essentially a convenience wrapper around \code{\link{readLines}}. Reads a
@@ -36,12 +36,12 @@ mode.
 
 
 \describe{
-   \item{
-      \command{Skipping more lines, \var{skip}, than lines to skip, \var{lines}.}
-   }{
-      There are fewer lines left (after skipping comments) than you asked to
-      skip. Will return \code{character(0)} to indicate no kept lines/strings.
-   }
+\item{
+\command{Skipping more lines, \var{skip}, than lines to skip, \var{lines}.}
+}{
+There are fewer lines left (after skipping comments) than you asked to
+skip. Will return \code{character(0)} to indicate no kept lines/strings.
+}
 }
 }
 

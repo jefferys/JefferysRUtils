@@ -12,8 +12,8 @@ absolute paths.}
 }
 \value{
 A logical vector that is \code{TRUE} for absolute \code{paths= },
-  \code{FALSE+} for most other things (including \code{NA} and empty string),
-  and an empty vector if \code{paths= } is empty or \code{NULL}.
+\code{FALSE+} for most other things (including \code{NA} and empty string),
+and an empty vector if \code{paths= } is empty or \code{NULL}.
 }
 \description{
 Checks a vector of paths to see if they are absolute paths. Returns a

@@ -19,7 +19,7 @@
 #'   distribution.
 #'
 #' @return The probability of each of the specified line segments. Note that
-#'   for segments specified backwards (b[i] < a[i]), the corresponding
+#'   for segments specified backwards like `b[i] < a[i]`, the corresponding
 #'   probabilities will be negative.
 #'
 #' @examples

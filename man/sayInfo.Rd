@@ -65,7 +65,7 @@ symbols (like \code{\%s}), unless \code{capture= TRUE}}
 \item{...}{Extra arguments for use by \code{msg}, if it is a sprintf message
 (\code{capture= FALSE}), or objects to have the logger format and print
 starting on the line following a non-sprintf message. (\code{capture=
-TRUE}.)}
+  TRUE}.)}
 
 \item{name}{The logger names to use (a vector of strings). By default will
 use \code{c( \var{package}.file, \var{package}.code )}. A message of the
@@ -79,8 +79,8 @@ by the appender layout, by default printed on the next line following
 }
 \value{
 Returns the message from the last logger named, may be NULL if that
-  logger does not log the message due to threshold issues and
-  \code{flog.carp(TRUE)} is not set.
+logger does not log the message due to threshold issues and
+\code{flog.carp(TRUE)} is not set.
 }
 \description{
 These are essentially the same as the level-specific loggers in

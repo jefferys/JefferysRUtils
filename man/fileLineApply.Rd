@@ -23,13 +23,13 @@ fileLineApply(
 }
 \arguments{
 \item{con}{The path to a text file to read, or a \code{\link{connection}}
-  (including urls). Will auto-detect compression and read single gzip,
-  bzip2, zip, and xz/lzma files or connections to them (i.e. no tarred files
-  or zipped directories allowed).
+(including urls). Will auto-detect compression and read single gzip,
+bzip2, zip, and xz/lzma files or connections to them (i.e. no tarred files
+or zipped directories allowed).
 
-  Open connections are read from their current positions. If not already
-  open, a connection will be opened in "rt" mode and then closed again before
-  the call to this function returns.}
+Open connections are read from their current positions. If not already
+open, a connection will be opened in "rt" mode and then closed again before
+the call to this function returns.}
 
 \item{FUN}{The function called on each file line (character vector element).
 This function should take a (1 element) character vector of characters as
@@ -62,12 +62,12 @@ number of blocks allowed before reallocating space. By default this is
 
 \item{growX}{Tuning parameter for internal memory management. If run out of
 space to store block results, increase total space by \code{growX * current
-+ growAdd}. Done each time run out of space, allocating successively large
+  + growAdd}. Done each time run out of space, allocating successively large
 blocks of space. By default this is 2.}
 
 \item{growAdd}{Tuning parameter for internal memory management. If run out of
 space to store block results, increase total space by \code{growX * current
-+ growAdd}. Done each time run out of space, allocating successively large
+  + growAdd}. Done each time run out of space, allocating successively large
 blocks of space. By default this is 0.}
 
 \item{.warn}{Passed through to readLines as the \code{warn}
@@ -91,11 +91,11 @@ Set TRUE to keep the source line from the file as the name of the returned value
 }
 \value{
 The result of applying \code{FUN} to each line in the file or
-  connection, as returned by \code{\link{readLines}}. It is probably
-  invisible, but the internal process is to assign the results from each
-  block to successive list elements, and then unlists one level before
-  returning. You can always unlist the result to get a vector, depending
-  on what \code{FUN} returns
+connection, as returned by \code{\link{readLines}}. It is probably
+invisible, but the internal process is to assign the results from each
+block to successive list elements, and then unlists one level before
+returning. You can always unlist the result to get a vector, depending
+on what \code{FUN} returns
 }
 \description{
 Applies a function to each line of a file or connection, processing each line
@@ -115,34 +115,34 @@ is too small this may be inefficient in both time and memory.
 }
 \section{File reading}{
  The file is read with \code{\link{readLines}}; the
-  \code{.} prefixed parameters are passed through to \code{readLines} and
-  allow controlling how embedded NUL characters are treated and if the blocks
-  passed to \code{FUN} are annotated with encoding information.
+\code{.} prefixed parameters are passed through to \code{readLines} and
+allow controlling how embedded NUL characters are treated and if the blocks
+passed to \code{FUN} are annotated with encoding information.
 
-  Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
-  separators. The elements of the character vectors (file lines) passed to
-  \code{FUN} do not contain these separators.
+Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
+separators. The elements of the character vectors (file lines) passed to
+\code{FUN} do not contain these separators.
 
-  If a file has no terminal EOL marker, the last line will not be included if
-  the file/connection was non-blocking and text-mode. Otherwise it will be
-  included, but as this may signal truncated or incomplete data, a warning is
-  generated.
+If a file has no terminal EOL marker, the last line will not be included if
+the file/connection was non-blocking and text-mode. Otherwise it will be
+included, but as this may signal truncated or incomplete data, a warning is
+generated.
 
-  Embedded NUL characters will by default end their lines, but trigger a
-  warning that this is happening. No text between the NUL and the next EOL
-  marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
-  as returned. Turn off NUL warnings if you expect NUL characters and want
-  this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
-  return all text in the line, dropping the NUL characters, set
-  \code{.skipNul= TRUE}. No warning is then generated.
+Embedded NUL characters will by default end their lines, but trigger a
+warning that this is happening. No text between the NUL and the next EOL
+marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
+as returned. Turn off NUL warnings if you expect NUL characters and want
+this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
+return all text in the line, dropping the NUL characters, set
+\code{.skipNul= TRUE}. No warning is then generated.
 }
 
 \section{Kinds of functions}{
  If a function takes a vector of characters as
-  its input, it might be more efficient to use \code{fileBlockApply}. This is
-  especially true for filtering functions, like grep. Functions that return
-  indices or logicals vectors can be used with \code{fileFilterApply} which
-  will return the elements instead of an index or logical vector.
+its input, it might be more efficient to use \code{fileBlockApply}. This is
+especially true for filtering functions, like grep. Functions that return
+indices or logicals vectors can be used with \code{fileFilterApply} which
+will return the elements instead of an index or logical vector.
 }
 
 \examples{

@@ -23,8 +23,8 @@ distribution.}
 }
 \value{
 The probability of each of the specified line segments. Note that
-  for segments specified backwards (b[i] < a[i]), the corresponding
-  probabilities will be negative.
+for segments specified backwards like \code{b[i] < a[i]}, the corresponding
+probabilities will be negative.
 }
 \description{
 Calculates the difference between two values of a cumulative probability

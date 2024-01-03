@@ -21,13 +21,13 @@ fileBlockApply(
 }
 \arguments{
 \item{con}{The path to a text file to read, or a \code{\link{connection}}
-  (including urls). Will auto-detect compression and read single gzip,
-  bzip2, zip, and xz/lzma files or connections to them (i.e. no tarred files
-  or zipped directories allowed).
+(including urls). Will auto-detect compression and read single gzip,
+bzip2, zip, and xz/lzma files or connections to them (i.e. no tarred files
+or zipped directories allowed).
 
-  Open connections are read from their current positions. If not already
-  open, a connection will be opened in "rt" mode and then closed again before
-  the call to this function returns.}
+Open connections are read from their current positions. If not already
+open, a connection will be opened in "rt" mode and then closed again before
+the call to this function returns.}
 
 \item{FUN}{The function called on each file block (vector of file lines). This
 function should take a character vector of characters as its first parameter, or as
@@ -59,12 +59,12 @@ number of blocks allowed before reallocating space. By default this is
 
 \item{growX}{Tuning parameter for internal memory management. If run out of
 space to store block results, increase total space by \code{growX * current
-+ growAdd}. Done each time run out of space, allocating successively large
+  + growAdd}. Done each time run out of space, allocating successively large
 blocks of space.}
 
 \item{growAdd}{Tuning parameter for internal memory management. If run out of
 space to store block results, increase total space by \code{growX * current
-+ growAdd}. Done each time run out of space, allocating successively large
+  + growAdd}. Done each time run out of space, allocating successively large
 blocks of space. By default this is 0.}
 
 \item{.warn}{Passed through to readLines as the \code{warn}
@@ -82,10 +82,10 @@ parameter.}
 }
 \value{
 The result of applying \code{FUN} to each chunk in the file or
-  connection, as returned by \code{\link{readLines}}. It is probably
-  invisible, but the internal process is to assign the results from each
-  block to successive list elements, and then unlist one level before
-  returning.
+connection, as returned by \code{\link{readLines}}. It is probably
+invisible, but the internal process is to assign the results from each
+block to successive list elements, and then unlist one level before
+returning.
 }
 \description{
 Applies a transforming or filtering function to blocks of lines from a file
@@ -105,43 +105,43 @@ is too small this may be inefficient in both time and memory.
 }
 \section{File reading}{
  The file is read with \code{\link{readLines}}; the
-  \code{.} prefixed parameters are passed through to \code{readLines} and
-  allow controlling how embedded NUL characters are treated and if the blocks
-  passed to \code{FUN} are annotated with encoding information.
+\code{.} prefixed parameters are passed through to \code{readLines} and
+allow controlling how embedded NUL characters are treated and if the blocks
+passed to \code{FUN} are annotated with encoding information.
 
-  Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
-  separators. The elements of the character vector chunks passed to
-  \code{FUN} do not contain these separators.
+Any of \code{LF}, \code{CRLF}, or \code{CR} are recognized as line
+separators. The elements of the character vector chunks passed to
+\code{FUN} do not contain these separators.
 
-  If a file has no terminal EOL marker, the last line will not be included if
-  the file/connection was non-blocking and text-mode. Otherwise it will be
-  included, but as this may signal truncated or incomplete data, a warning is
-  generated.
+If a file has no terminal EOL marker, the last line will not be included if
+the file/connection was non-blocking and text-mode. Otherwise it will be
+included, but as this may signal truncated or incomplete data, a warning is
+generated.
 
-  Embedded NUL characters will by default end their lines, but trigger a
-  warning that this is happening. No text between the NUL and the next EOL
-  marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
-  as returned. Turn off NUL warnings if you expect NUL characters and want
-  this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
-  return all text in the line, dropping the NUL characters, set
-  \code{.skipNul= TRUE}. No warning is then generated.
+Embedded NUL characters will by default end their lines, but trigger a
+warning that this is happening. No text between the NUL and the next EOL
+marker (\code{LF}, \code{CRLF}, or \code{CR}) will be included in the line
+as returned. Turn off NUL warnings if you expect NUL characters and want
+this truncation (set \code{.warn= FALSE}). To ignore NUL characters and
+return all text in the line, dropping the NUL characters, set
+\code{.skipNul= TRUE}. No warning is then generated.
 }
 
 \section{Kinds of functions}{
  Only functions that preserve elements work
-  simply. This means the function outputs results where each element of the
-  output is based on only one element of the input. For example, \code{out <-
+simply. This means the function outputs results where each element of the
+output is based on only one element of the input. For example, \code{out <-
   nchar(in)} is a 1-1 vector transform of \code{in}, so it just works.
-  \code{out <- intersect(in, setVec)} also works, as on an element by element
-  basis, it either outputs or does not output an element from \code{in}.
-  \code{grep} works similarly with \code{value=TRUE}. Functions that return
-  indices may not be useful unless \code{filter= TRUE} is set as these
-  indices will be relative to the chunk boundaries. If you want to use other
-  kinds of functions, you can always set unlist=FALSE and manually combine
-  the results yourself.
+\code{out <- intersect(in, setVec)} also works, as on an element by element
+basis, it either outputs or does not output an element from \code{in}.
+\code{grep} works similarly with \code{value=TRUE}. Functions that return
+indices may not be useful unless \code{filter= TRUE} is set as these
+indices will be relative to the chunk boundaries. If you want to use other
+kinds of functions, you can always set unlist=FALSE and manually combine
+the results yourself.
 
-  Note: Applying your function to blocks with this function will likely be
-  faster than applying it one line at a time with \code{fileLineApply}.
+Note: Applying your function to blocks with this function will likely be
+faster than applying it one line at a time with \code{fileLineApply}.
 }
 
 \examples{

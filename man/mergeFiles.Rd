@@ -15,10 +15,10 @@ mergeFiles(
 )
 }
 \arguments{
-\item{inFiles}{*REQ* The file paths to concatenate.}
+\item{inFiles}{\emph{REQ} The file paths to concatenate.}
 
 \item{outFile}{The file paths to use for output. Defaults to a temporary file
-named `<tempdir()>/merged<random>.tmp`. If the file already exists, it will be
+named \verb{<tempdir()>/merged<random>.tmp}. If the file already exists, it will be
 overwritten.}
 
 \item{names}{The names to prefix to the output lines. By default this will be
@@ -33,7 +33,7 @@ than required by this parameter. A warning is generated for each file whose
 header differ from the first.}
 
 \item{colName}{The header for the name column, if \code{headerLines} > 0. Every
-*header* line will have this prefixed, separated by \code{delim}.
+\emph{header} line will have this prefixed, separated by \code{delim}.
 Default is FILE.}
 
 \item{keepEmpty}{Set \code{TRUE} to have empty files treated as if they contained a
@@ -44,7 +44,7 @@ should end with an EOL character.).}
 }
 \value{
 Returns the output file name, important if the output is created as an
-  temp file.
+temp file.
 }
 \description{
 Sequentially concatenates text files adding the source filename to the start
@@ -65,25 +65,25 @@ only if \code{keepEmpty} is set \code{TRUE}.
 
 
 \describe{
-   \item{
-      \command{Must specify at least one input file.}
-   }{
-      If no files are specified, function will exit with error.
-   }
-   \item{
-      \command{Not enough lines in file to have expected header: "\var{file}".}
-   }{
-      There are fewer lines in the file  "\var{file}" than header lines, so
-      it can't possibly have the same header, let alone any data.
-   }
-   \item{
-      \command{Parameters inFiles= and names= must be vectors of the same length.}
-   }{
-      Since names are being used instead of file paths in the output file, it
-      does not make sense to allow wrapping here. If you want the same name for
-      multiple files or the same file with multiple names, just include it in
-      the relevant parameter more than once.
-   }
+\item{
+\command{Must specify at least one input file.}
+}{
+If no files are specified, function will exit with error.
+}
+\item{
+\command{Not enough lines in file to have expected header: "\var{file}".}
+}{
+There are fewer lines in the file  "\var{file}" than header lines, so
+it can't possibly have the same header, let alone any data.
+}
+\item{
+\command{Parameters inFiles= and names= must be vectors of the same length.}
+}{
+Since names are being used instead of file paths in the output file, it
+does not make sense to allow wrapping here. If you want the same name for
+multiple files or the same file with multiple names, just include it in
+the relevant parameter more than once.
+}
 }
 }
 
@@ -91,14 +91,14 @@ only if \code{keepEmpty} is set \code{TRUE}.
 
 
 \describe{
-   \item{
-      \command{File headings differ between first file and "\var{file}"}
-   }{
-      If \code{headingLines} is set (> 0), that many lines will be read from
-      the first file and used as the heading in the output file. Each following
-      file is then checked to ensure it has the same heading, If the heading does
-      not match, this warning is signaled.
-   }
+\item{
+\command{File headings differ between first file and "\var{file}"}
+}{
+If \code{headingLines} is set (> 0), that many lines will be read from
+the first file and used as the heading in the output file. Each following
+file is then checked to ensure it has the same heading, If the heading does
+not match, this warning is signaled.
+}
 }
 }
 

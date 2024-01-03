@@ -13,16 +13,16 @@
 
 \item{keepOrder}{How to order the list when duplicates occur: by default
 this is FALSE, with duplicates dropped from \code{x} when they have the
- same name as an element in \code{y}, before appending \code{y}. If TRUE,
- preserves the order of element names as much as possible, by replacing the
- value of duplicated element names with those from \code{y}, then appending
- \code{y} with duplicated elements dropped.}
+same name as an element in \code{y}, before appending \code{y}. If TRUE,
+preserves the order of element names as much as possible, by replacing the
+value of duplicated element names with those from \code{y}, then appending
+\code{y} with duplicated elements dropped.}
 
 \item{...}{Required for generic method. Not used.}
 }
 \value{
 A list consisting of all elements from \code{x} not also in \code{y},
-  and then all elements in \code{y}, or
+and then all elements in \code{y}, or
 }
 \description{
 Merges two lists, appending the second to the first. Expects that all

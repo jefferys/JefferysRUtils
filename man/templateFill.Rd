@@ -40,9 +40,9 @@ comes great responsibility.}
 }
 \value{
 A copy of the original vector of strings, but with variable names
-  replaced with their values, or with the result of evaluating the
-  interpolated string as R code. Note that everything is returned as a
-  string, so \code{'{1+1}'} is returned as \code{'2'}.
+replaced with their values, or with the result of evaluating the
+interpolated string as R code. Note that everything is returned as a
+string, so \code{'{1+1}'} is returned as \code{'2'}.
 }
 \description{
 Given a vector of strings containing \code{\{\{variables\}\}}, returns a copy
