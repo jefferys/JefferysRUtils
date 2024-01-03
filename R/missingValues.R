@@ -78,7 +78,7 @@ fixNull <- function( x, val= NULL, func= NULL, ... ) {
    }
 }
 
-#' An ifelse handling NA and NULL too.
+#' An `ifelse()` handling NA and NULL too.
 #'
 #' Tests a Boolean scalar value and returns one of four values:
 #' * If `x` is `TRUE`, returns the value of the `true` parameter (TRUE by default).

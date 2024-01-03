@@ -2,7 +2,7 @@
 % Please edit documentation in R/getData.R
 \name{checkSha256}
 \alias{checkSha256}
-\title{Validate files by sha256 checksum hashing}
+\title{Validate files by SHA256 checksum hashing}
 \usage{
 checkSha256(checksums = NULL, files = NULL, error = NA, ext = ".sha256")
 }
@@ -20,8 +20,8 @@ When \code{checksums} are named, \code{files} is optional and will default to th
 checksum names.}
 
 \item{error}{Boolean value. \code{NA} or \code{FALSE} specifies the result to return
-when files are missing (eitherr files to be validated or expected note
-files). Settting this \code{TRUE} causes an error to be thrown when a file is
+when files are missing (either files to be validated or expected note
+files). Setting this \code{TRUE} causes an error to be thrown when a file is
 not found, halting checking.}
 
 \item{ext}{If only files are specified and checksums are not, checksums are
@@ -29,16 +29,16 @@ expected to be provided in "note" files stored on the file system in
 parallel to the files being validated. For every file to check, the name of
 the matching "note" file is obtained by suffixing this extension to the
 name of the file it matches. The note file should contain the checksum of
-the unsuffixed file as a string. The hash string should be the only thing
+the matching file as a string. The hash string should be the only thing
 in the file. It doesn't matter if the checksum string ends with an EOL or
-not. This generally should start with a "." and by default will be ".sha256".}
+not. This generally should start with a "." and by default will be \code{.sha256}.}
 }
 \value{
 A boolean vector indicating if files match their
-provided sha256 checksum hashes.
+provided SHA256 checksum hashes.
 }
 \description{
-Validates files by calculating their sha256 checksums and comparing
+Validates files by calculating their SHA256 checksums and comparing
 them to the expected hash. Returns a named boolean vector indicating matching
 or mismatching files, by path. \code{error} can be set to return \code{FALSE} or \code{NA}
 for problem files instead of throwing an error. File names can be any mix of
@@ -56,7 +56,7 @@ as the provided \code{files} vector.
 If \code{checksums} are not specified, then for each file in \code{files}, a
 "note" file containing the string checksum as its only content (EOL
 optional) will be looked for. They are expected to be named the same as the
-\code{files}, but with the addition of the extension \code{ext} (by default ".sha256").
-It is an error if an expected sha256 note file is not found, but this behavior
+\code{files}, but with the addition of the extension \code{ext} (by default \code{.sha256}).
+It is an error if an expected \code{.sha256} note file is not found, but this behavior
 can be configured by setting \code{error}.
 }

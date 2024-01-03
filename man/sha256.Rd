@@ -2,7 +2,7 @@
 % Please edit documentation in R/getData.R
 \name{sha256}
 \alias{sha256}
-\title{Get the sha256 checksum of a file.}
+\title{Get the SHA256 checksum of a file.}
 \usage{
 sha256(file, as.hash = FALSE)
 }
@@ -13,12 +13,12 @@ sha256(file, as.hash = FALSE)
 to a string}
 }
 \value{
-Returns the hashcode as a string, unless as.hash= TRUE is set, in
-which case the hash byte object as obtained from openssl::sha256 is
+Returns the hash as a string, unless as.hash= TRUE is set, in
+which case the hash byte object as obtained from \code{openssl::sha256()} is
 returned.
 }
 \description{
-Wrapper around openssl::sha256() to make it easy to calculate a checksum of a
+Wrapper around \code{openssl::sha256()} to make it easy to calculate a checksum of a
 file. Converts the returned hash code to a string by default, but can set
 \code{as.hash= TRUE} to get the unconverted raw byte based hash object instead.
 }

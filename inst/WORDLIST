@@ -6,6 +6,7 @@ appender
 bzip
 cdf
 chunkSize
+checksums
 gzip
 lzma
 namePrefix
@@ -17,6 +18,7 @@ regExp
 regexprCapture
 sapply
 sd
+SHA
 sprintf
 tempDir
 tempdir

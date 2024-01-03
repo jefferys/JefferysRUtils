@@ -17,13 +17,13 @@ githubGet(file, repo, commit, dir = "./", force = FALSE, sha256 = NULL, ...)
 
 \item{force}{Download and over-write if already exists in output directory.}
 
-\item{sha256}{Expected sha256 checksum.}
+\item{sha256}{Expected SHA256 checksum.}
 
 \item{...}{Other parameters to pass through to download.file}
 }
 \value{
 The exit code from download.file - 0 for success, positive integer
-for error, and NA if not attempted due to pre-existing file.
+for error, and NA if not attempted due to an existing file.
 }
 \description{
 Given the file name, repository, and commit/tag/branch, downloads the

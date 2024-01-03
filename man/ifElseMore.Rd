@@ -2,7 +2,7 @@
 % Please edit documentation in R/missingValues.R
 \name{ifElseMore}
 \alias{ifElseMore}
-\title{An ifelse handling NA and NULL too.}
+\title{An \code{ifelse()} handling NA and NULL too.}
 \usage{
 ifElseMore(x, true = TRUE, false = FALSE, na = NA, null = NULL)
 }

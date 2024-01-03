@@ -1,7 +1,7 @@
 
-#' Get the sha256 checksum of a file.
+#' Get the SHA256 checksum of a file.
 #'
-#' Wrapper around openssl::sha256() to make it easy to calculate a checksum of a
+#' Wrapper around `openssl::sha256()` to make it easy to calculate a checksum of a
 #' file. Converts the returned hash code to a string by default, but can set
 #' `as.hash= TRUE` to get the unconverted raw byte based hash object instead.
 #'
@@ -9,8 +9,8 @@
 #' @param as.hash Set TRUE to return the hash byte object instead of converting
 #'   to a string
 #'
-#' @return Returns the hashcode as a string, unless as.hash= TRUE is set, in
-#'   which case the hash byte object as obtained from openssl::sha256 is
+#' @return Returns the hash as a string, unless as.hash= TRUE is set, in
+#'   which case the hash byte object as obtained from `openssl::sha256()` is
 #'   returned.
 #'
 #' @examples
@@ -38,9 +38,9 @@ sha256 <- function( file, as.hash= FALSE ) {
 }
 
 
-#' Validate files by sha256 checksum hashing
+#' Validate files by SHA256 checksum hashing
 #'
-#' Validates files by calculating their sha256 checksums and comparing
+#' Validates files by calculating their SHA256 checksums and comparing
 #' them to the expected hash. Returns a named boolean vector indicating matching
 #' or mismatching files, by path. `error` can be set to return `FALSE` or `NA`
 #' for problem files instead of throwing an error. File names can be any mix of
@@ -57,8 +57,8 @@ sha256 <- function( file, as.hash= FALSE ) {
 #' If `checksums` are not specified, then for each file in `files`, a
 #' "note" file containing the string checksum as its only content (EOL
 #' optional) will be looked for. They are expected to be named the same as the
-#' `files`, but with the addition of the extension `ext` (by default ".sha256").
-#' It is an error if an expected sha256 note file is not found, but this behavior
+#' `files`, but with the addition of the extension `ext` (by default `.sha256`).
+#' It is an error if an expected `.sha256` note file is not found, but this behavior
 #' can be configured by setting `error`.
 #'
 #' @param checksums A vector or list of expected checksums. If named, they will
@@ -76,16 +76,16 @@ sha256 <- function( file, as.hash= FALSE ) {
 #'   parallel to the files being validated. For every file to check, the name of
 #'   the matching "note" file is obtained by suffixing this extension to the
 #'   name of the file it matches. The note file should contain the checksum of
-#'   the unsuffixed file as a string. The hash string should be the only thing
+#'   the matching file as a string. The hash string should be the only thing
 #'   in the file. It doesn't matter if the checksum string ends with an EOL or
-#'   not. This generally should start with a "." and by default will be ".sha256".
+#'   not. This generally should start with a "." and by default will be `.sha256`.
 #' @param error Boolean value. `NA` or `FALSE` specifies the result to return
-#'   when files are missing (eitherr files to be validated or expected note
-#'   files). Settting this `TRUE` causes an error to be thrown when a file is
+#'   when files are missing (either files to be validated or expected note
+#'   files). Setting this `TRUE` causes an error to be thrown when a file is
 #'   not found, halting checking.
 #'
 #' @return A boolean vector indicating if files match their
-#' provided sha256 checksum hashes.
+#' provided SHA256 checksum hashes.
 #'
 #' @examples
 #'
@@ -115,7 +115,7 @@ checkSha256 <- function( checksums=NULL, files= NULL, error= NA, ext=".sha256") 
             sha256 <- readLines( sha256File, n= 1, warn= FALSE)
             if (nchar(sha256 != 64)) {
                return( ifElseMore( error, stop(
-                  "Not a sha256 checksum file: \"", sha256File, "\"."
+                  "Not a SHA256 checksum file: \"", sha256File, "\"."
                )))
             return( sha256 )
          }
@@ -136,11 +136,11 @@ checkSha256 <- function( checksums=NULL, files= NULL, error= NA, ext=".sha256") 
 #' @param commit The commit, tag, or branch to download.
 #' @param dir The directory to download to, by default the current working directory.
 #' @param force Download and over-write if already exists in output directory.
-#' @param sha256 Expected sha256 checksum.
+#' @param sha256 Expected SHA256 checksum.
 #' @param ... Other parameters to pass through to download.file
 #'
 #' @return The exit code from download.file - 0 for success, positive integer
-#' for error, and NA if not attempted due to pre-existing file.
+#' for error, and NA if not attempted due to an existing file.
 #'
 #' @examples
 #' \dontrun{
@@ -167,10 +167,10 @@ githubGet <- function( file, repo, commit, dir= "./", force= FALSE,
       if (as.character(sha256) != hash) {
          if (is.na(retVal)) {
             stop( "File already existed (not downloaded)",
-                  " but sha256 does not match.")
+                  " but SHA256 does not match.")
          }
          else {
-            stop( "File as downloaded does not match provided sha256." )
+            stop( "File as downloaded does not match provided SHA256." )
          }
       }
    }
