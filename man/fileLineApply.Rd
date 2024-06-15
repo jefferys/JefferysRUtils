@@ -139,10 +139,10 @@ return all text in the line, dropping the NUL characters, set
 
 \section{Kinds of functions}{
  If a function takes a vector of characters as
-its input, it might be more efficient to use \code{fileBlockApply}. This is
-especially true for filtering functions, like grep. Functions that return
-indices or logicals vectors can be used with \code{fileFilterApply} which
-will return the elements instead of an index or logical vector.
+its input, it might be more efficient to use \code{fileBlockApply}. This
+is especially true for filtering functions, like grep. Functions that
+return indices or logicals vectors can be used with \code{fileFilterApply}
+which will return the elements instead of an index or logical vector.
 }
 
 \examples{

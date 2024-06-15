@@ -42,11 +42,9 @@ isDirPath( c( "./", ".", "noSuchDir/", "noSuchDir", "~", "*" ),
 
 }
 \seealso{
-\itemize{
-\item \code{dir.exists()}: to just check if a directory exists.
-\item \code{dirname()}: to extract the directory part of a file path (ignores end "/").
-\item \code{Sys.glob()}: to expand glob patterns into a vector of paths (including
+\code{dir.exists()}: to just check if a directory exists.
+\code{dirname()}: to extract the directory part of a file path (ignores end "/").
+\code{Sys.glob()}: to expand glob patterns into a vector of paths (including
 optionally adding a terminal "/" to directories).
-\item \code{path.expand()}: to expand leading "~" to home directory, where supported.
-}
+\code{path.expand()}: to expand leading "~" to home directory, where supported.
 }

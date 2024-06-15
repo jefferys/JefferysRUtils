@@ -311,10 +311,10 @@ fileBlockApply <- function( con, FUN, ...,
 #'   \code{.skipNul= TRUE}. No warning is then generated.
 #'
 #' @section Kinds of functions: If a function takes a vector of characters as
-#'   its input, it might be more efficient to use \code{fileBlockApply}. This is
-#'   especially true for filtering functions, like grep. Functions that return
-#'   indices or logicals vectors can be used with \code{fileFilterApply} which
-#'   will return the elements instead of an index or logical vector.
+#'   its input, it might be more efficient to use \code{fileBlockApply}. This
+#'   is especially true for filtering functions, like grep. Functions that
+#'   return indices or logicals vectors can be used with \code{fileFilterApply}
+#'   which will return the elements instead of an index or logical vector.
 #'
 #' @param con The path to a text file to read, or a \code{\link{connection}}
 #'   (including urls). Will auto-detect compression and read single gzip,
