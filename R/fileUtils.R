@@ -468,3 +468,193 @@ isDirPath <- function( paths, lexical= FALSE ) {
    }
    retVal
 }
+
+#' Validate a file against a checksum file
+#'
+#' Validates a file using a specified checksum algorithm against a file that
+#' contains just the expected checksum result. By default looks for a file
+#' in parallel to the file tested, except with an additional extension matching
+#' the checksum algorithm. Can specify what to do after testing match through
+#' use of the `as=` argument. Supports returning TRUE/FALSE, a string message,
+#' or signaling a message via `stop()`, `warning()`, or `message()`. To support
+#' testing without throwing errors, any errors such as missing file are reported
+#' the same as an error triggered by a mismatched checksum, except it causes NA
+#' to be returned with `as=test`.
+#'
+#' @param file The file to validate
+#' @param algo The checksum algorithm to use (see `digest::digest()`).
+#' @param checkFile The name of the file holding the expected checksum value.
+#' If `NULL`, will attempt to guess; assumes named the same as `file=`, except
+#' with an additional extension matching `algo=`. If not found, looks for a
+#' hidden checkFile (with a leading "."). e.g. an md5 checkFile for
+#' `file.txt` would be guessed as `file.txt.md5` or `.file.txt.md5`.
+#' @param as How the results of the checksum test are reported. `as="test"`
+#'   returns `TRUE` if the checksums match, `FALSE` if they do not, and `NA` if
+#'   there is an error looking for the requisite files. All others rely on a
+#'   generated string - either the empty string `""` when the checksums match,
+#'   an error with the file names and checksums when they fail to match, or an
+#'   error if something prevents them from being calculated (e.g. missing
+#'   files). `as="check"` returns this string, `as="error"` and `as="stop"` are
+#'   aliases; they either return the generated empty string (silently), or
+#'   trigger an error exit if the string is not empty. `as="warning"` and
+#'   `as="message"` return the generated string silently, but also signal the
+#'   appropriate message if the string is not empty.
+#'
+#' @return Depends on `as=`. With matching checksums, will either be TRUE or the
+#'   empty string `"` (possibly silently). If checksums don't match, it will
+#'   either be FALSE, a string giving the files and their mismatched checksums
+#'   (possibly silently), or an error will be triggered. If there is a problem
+#'   calculating the checksums, e.g. a file does not exits, the result will
+#'   either be "NA", a string describing the problem, or an error will be
+#'   triggered.
+#'
+#' @export
+checkFileSum <- function( file, algo= c("md5", "sha1", "crc32", "sha256", "sha512"),
+                          checkFile= NULL,
+                          as= c( "test", "check", "error", "warning", "message", "stop" )) {
+   algo <- match.arg(algo)
+   as <- match.arg(as)
+
+   # Using message to signal error
+   message = c()
+   if (! file.exists( file )) {
+      message = c( message, paste0( "Can't find file: \"", file, "\"." ))
+   }
+   if (is.null(checkFile)) {
+      checkFile <- paste0( file, ".", algo )
+      if (! file.exists( checkFile )) {
+         # toggle checkFile from hidden <-> non-hidden and try again
+         guessBaseName <- basename( checkFile )
+         if (grepl("^[.]", guessBaseName)) {
+            guessBaseName <- sub( "^[.]+", "", guessBaseName )
+         }
+         else {
+            guessBaseName <- paste0( ".", guessBaseName)
+         }
+         checkFile <- file.path( dirname(checkFile), guessBaseName)
+         if (! file.exists( checkFile )) {
+            message = c( message, paste0( "Can't find a matching checksum file for: \"", file, "\"." ))
+         }
+      }
+   }
+   else if (! file.exists( checkFile )) {
+      message = c( message, paste0( "Can't find specified checksum file: \"", checkFile, "\"." ))
+   }
+
+   message = paste0( message, collapse= "\n" )
+
+   # Check message, if empty, was no error, so have file and checkFile.
+   if ( nchar( message ) == 0 ) {
+      got <-  digest::digest( object= file, algo=algo, file= TRUE )
+      want <- readLines( checkFile, n=1 )
+   }
+
+   # as 'test' returns TRUE or FALSE, everything else requires a message
+   if (as == "test" && nchar( message ) != 0 ) {
+      return( NA )
+   } else if (as == "test" && nchar( message ) == 0 ) {
+      return( got == want )
+   } else if (as != "test" && nchar( message ) == 0 ) {
+      if (got != want) {
+         message = paste0( "**Checksum '", algo, "' mismatch**:\n",
+                           "\tFrom the checkFile: '", want, "' (", checkFile, "),\n",
+                           "\tComputed: '", got, "' (", file, ").\n")
+      }
+   }
+
+   # as determines if returning a string or signaling a condition. Conditions
+   # are only signaled if there is a message. If the condition is not fatal,
+   # the message string is returned invisibly.
+   if ( as == "check" ) {
+      return( message )
+   } else if ( nchar( message ) != 0 ) {
+      if ( as == "error" ) {
+         stop( message )
+      } else if ( as == "warning" ) {
+         warning( message )
+      } else if ( as == "message" ) {
+         message( message )
+      }
+   }
+   invisible( message )
+}
+
+#' Create a checksum file
+#'
+#' Calculates a checksum for a file and saves it to file that by default is
+#' named the same, except with an appended extension matching the algorithm.
+#' @param file The file to validate
+#' @param algo The checksum algorithm to use (see `digest::digest()`).
+#' @param checkFile The name of the checksum file to create.
+#' By default named the same as file, with an additional extension matching
+#' `algo`, e.g. for an md5 checkFile for `file.txt`, the default would be
+#'  `file.txt.md5`. If this filename includes a directory component, it will
+#'  be created if needed.
+#' @param show Should the checkFiles be visible (i.e. NOT start with a ".")? This is
+#' ignored if the checkFile is specified. Note, if the file is
+#' hidden, then its default checksum file will be hidden regardless of this setting.
+#' @param overwrite If the checkFile already exists and does not match, it is
+#' an error unless this is set TRUE, in which case the file is just overwritten.
+#' If it matches, then done (in this case modify timestamps will not be changed).
+#'
+#' @return The generated checkFile
+#'
+#' @export
+saveFileSum <- function( file, algo= c("md5", "sha1", "crc32", "sha256", "sha512"),
+                         checkFile= NULL, show= FALSE, overwrite= FALSE ) {
+   algo <- match.arg(algo)
+   if (is.null(checkFile)) {
+      checkFile <- paste0( file, ".", algo )
+      if (! show) {
+         checkFileBase <- basename( checkFile )
+         if (! grepl("^\\.", checkFileBase)) {
+            checkFileBase <- paste0( ".", checkFileBase )
+            checkFilePath <- dirname( checkFile )
+            checkFile <- file.path( checkFilePath, checkFileBase)
+         }
+      }
+   }
+   if (! file.exists( file )) {
+      stop( "Can't find file: \"", file, "\"." )
+   }
+   checkFilePath <- dirname( checkFile )
+   if (! dir.exists(checkFilePath)) {
+      dir.create( checkFilePath, recursive= TRUE )
+   }
+
+   # Handle existing checkfile
+   if (file.exists( checkFile )) {
+
+      # Good as is?
+      okAsIs <- checkFileSum( file, algo= algo, checkFile= checkFile )
+
+      if ( is.na(okAsIs) || ! okAsIs ) {
+         # Nope. If I can't overwrite, I'm stuck.
+         if (! overwrite) {
+            stop( "Checksum file exists and does not match!",
+                  " Without `overwrite= TRUE`, can't replace: \"", checkFile, "\"." )
+         }
+         # Not ok, but I can overwrite! I'll just pretend it doesn't exist.
+      } else {
+         # Yup. Just return filename
+         return( checkFile )
+      }
+   }
+
+   # Create checkFile. Will overwrite any existing file, but know its ok.
+   got <-  digest::digest( object= file, algo=algo, file= TRUE )
+   writeLines( got, checkFile )
+
+   # Validate checkFile just written is correct
+   wrote <- tryCatch( readLines( checkFile, n=1 ),
+                      error = function(e) as.character( e ),
+                      warning = function(e) as.character( e ))
+   if (got != wrote) {
+      stop( "Something appears to have gone wrong writing the checkFile.",
+            " Can't verify: \"", checkFile, "\"." )
+   }
+
+   # Done, return checkFile
+   checkFile
+}
+

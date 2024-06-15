@@ -1810,3 +1810,595 @@ describe( "isDirPath()", {
      })
    })
 })
+
+describe( "saveFileSum()", {
+
+   tempDir <- withr::local_tempdir( "test_saveFileSum" )
+   tempFile <- makeTempFile(
+      c( "One Fish", "Two Fish" ), tempDir= tempDir )
+   expectMd5 <- as.character( tools::md5sum( tempFile ))
+   expectSha256 <- as.character( digest::digest( tempFile, algo= "sha256", file = TRUE ))
+
+   describe( "Defaults", {
+      describe( "Implicit", {
+         # Expected default generated file path
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+
+         it( "Doesn't smoke", {
+            expect_silent( saveFileSum( tempFile ))
+            unlink( wantFile )
+         })
+
+         got <- expect_silent( saveFileSum( tempFile ))
+
+         it( "Returns expected MD5 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected md5 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Explicit", {
+         # Expected default generated file path
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+
+         got <- expect_silent( saveFileSum( tempFile, algo="md5", checkFile= NULL, show=FALSE, overwrite= FALSE  ))
+
+         it( "Returns expected MD5 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected md5 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+   })
+   describe( "checkFile=", {
+
+      # Specified file path
+      wantFile <- tempfile( pattern = "expectMd5File" )
+      got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile ))
+
+      it( "Returns expected MD5 sum", {
+         expect_equal( wantFile, got )
+      })
+      it( "Creates the expected md5 file", {
+         expect_true( file.exists( wantFile ))
+         expect_equal( expectMd5, readLines( wantFile ))
+      })
+
+      unlink( wantFile )
+   })
+   describe( "algo=", {
+      describe( "With checkFile= <default>", {
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".sha256" ))
+         got <- expect_silent( saveFileSum( tempFile, algo="sha256" ))
+
+         it( "Returns expected Sha256 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected sha256 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectSha256, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "With checkFile= <specified>", {
+         wantFile <- tempfile( pattern = "expectSha256File" )
+         got <- expect_silent( saveFileSum( tempFile, algo="sha256", checkFile= wantFile ))
+
+         it( "Returns expected Sha256 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected sha256 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectSha256, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+   })
+   describe( "show=TRUE", {
+      describe( "With algo= <default>", {
+         describe( "With checkFile= <default>", {
+
+            wantFile <- file.path( tempDir, paste0( basename(tempFile), ".md5" ))
+            got <- expect_silent( saveFileSum( tempFile, show= TRUE ))
+
+            it( "Returns expected md5 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected md5 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectMd5, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+
+         })
+         describe( "With checkFile= <specified>", {
+
+            wantFile <- tempfile( pattern = "expectMd5File" )
+            got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile, show= TRUE ))
+
+            it( "Returns expected md5 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected md5 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectMd5, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+
+         })
+      })
+      describe( "With algo= <specified>", {
+         describe( "With checkFile= <default>", {
+
+            wantFile <- file.path( tempDir, paste0( basename(tempFile), ".sha256" ))
+            got <- expect_silent( saveFileSum( tempFile, algo= "sha256", show= TRUE ))
+
+            it( "Returns expected sha256 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected sha256 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectSha256, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+
+         })
+         describe( "With checkFile= <specified>", {
+
+            wantFile <- tempfile( pattern = "expectSha256File" )
+            got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile, algo="sha256", show= TRUE ))
+
+            it( "Returns expected sha256 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected sha256 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectSha256, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+
+         })
+      })
+   })
+   describe( "overwrite=", {
+      describe( "Default checkFile, no collision, overwrite=TRUE", {
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+         got <- expect_silent( saveFileSum( tempFile, overwrite= TRUE ))
+
+         it( "Returns expected md5 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected md5 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Default checkFile, with collision", {
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+         writeLines( "oops", wantFile)
+
+         it( "Errors with collision, overwrite= FALSE", {
+            expectRE <- "Checksum file exists and does not match!" %pp%
+               "Without `overwrite= TRUE`, can't replace: \"" %p%
+               wantFile %p% '".'
+            expect_error( saveFileSum( tempFile, overwrite= FALSE ), expectRE)
+         })
+         it ( "works fine if have collision with overwrite", {
+            expect_true( file.exists( wantFile ))
+            got <- expect_silent( saveFileSum( tempFile, overwrite= TRUE ))
+
+            expect_equal( wantFile, got )
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Default checkFile, with collision and algo", {
+         wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".sha256" ))
+         writeLines( "oops", wantFile)
+
+         it( "Errors with collision, overwrite= FALSE", {
+            expectRE <- "Checksum file exists and does not match!" %pp%
+               "Without `overwrite= TRUE`, can't replace: \"" %p%
+               wantFile %p% '".'
+            expect_error( saveFileSum( tempFile, algo="sha256", overwrite= FALSE ), expectRE)
+         })
+         it ( "works fine if have collision with overwrite", {
+            expect_true( file.exists( wantFile ))
+            got <- expect_silent( saveFileSum( tempFile, algo="sha256", overwrite= TRUE ))
+
+            expect_equal( wantFile, got )
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectSha256, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Default checkFile, with collision, algo=<set> + show=TRUE", {
+         wantFile <- file.path( tempDir, paste0( basename(tempFile), ".sha256" ))
+         writeLines( "oops", wantFile)
+
+         it( "Errors with collision, overwrite= FALSE", {
+            expectRE <- "Checksum file exists and does not match!" %pp%
+               "Without `overwrite= TRUE`, can't replace: \"" %p%
+               wantFile %p% '".'
+            expect_error( saveFileSum( tempFile, algo="sha256", show=TRUE, overwrite= FALSE ), expectRE)
+         })
+         it ( "works fine if have collision with overwrite", {
+            expect_true( file.exists( wantFile ))
+            got <- expect_silent( saveFileSum( tempFile, algo="sha256", show=TRUE, overwrite= TRUE ))
+
+            expect_equal( wantFile, got )
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectSha256, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Manual checkFile, no collision, overwrite=TRUE", {
+         wantFile <- tempfile( pattern = "expectMd5File" )
+         got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile, overwrite= TRUE ))
+
+         it( "Returns expected md5 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected md5 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Manual checkFile, with collision", {
+         wantFile <- tempfile( pattern = "expectMd5File" )
+         writeLines( "oops", wantFile)
+
+         it( "Errors with collision, overwrite= FALSE", {
+            expectRE <- "Checksum file exists and does not match!" %pp%
+               "Without `overwrite= TRUE`, can't replace: \"" %p%
+               wantFile %p% '".'
+            expect_error( saveFileSum( tempFile, checkFile= wantFile, overwrite= FALSE ), expectRE)
+         })
+         it ( "works fine if have collision with overwrite", {
+            expect_true( file.exists( wantFile ))
+            got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile, overwrite= TRUE ))
+
+            expect_equal( wantFile, got )
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+   })
+   describe( "Corner cases and errors", {
+      describe( "Hidden original file", {
+         hiddenTempFile <- file.path( tempDir, paste0( ".", basename( tempFile )))
+         file.copy( tempFile, hiddenTempFile )
+
+         describe( "Default checkFile hidden, show=TRUE", {
+            wantFile <- file.path( tempDir, paste0( basename(hiddenTempFile), ".md5" ))
+            got <- expect_silent( saveFileSum( hiddenTempFile, show= TRUE ))
+
+            it( "Returns expected md5 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected md5 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectMd5, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+         })
+         describe( "Default checkFile hidden, show=FALSE, algo=<set>", {
+            wantFile <- file.path( tempDir, paste0( basename(hiddenTempFile), ".sha256" ))
+            got <- expect_silent( saveFileSum( hiddenTempFile, show= FALSE, algo="sha256" ))
+
+            it( "Returns expected sha256 sum", {
+               expect_equal( wantFile, got )
+            })
+            it( "Creates the expected sha256 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectSha256, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+         })
+      })
+      describe( "Original file does not exist", {
+         it( "throws an error", {
+            missingFile <- file.path( tempDir, "noSuchFile.txt" )
+            expect_false( file.exists( missingFile ))
+            errorRE <- "Can't find file: \"" %p% missingFile %p% '".'
+            expect_error( saveFileSum( missingFile ), errorRE)
+         })
+      })
+      describe( "Manual check file path is created when it does not exist", {
+         wantFile <- file.path( tempDir, "no", "such", "dirs", "checksum.md5" )
+
+         expect_false( dir.exists( dirname( wantFile )))
+         got <- expect_silent( saveFileSum( tempFile, checkFile= wantFile ))
+         expect_true( dir.exists( dirname( wantFile )))
+
+         it( "Returns expected MD5 sum", {
+            expect_equal( wantFile, got )
+         })
+         it( "Creates the expected md5 file", {
+            expect_true( file.exists( wantFile ))
+            expect_equal( expectMd5, readLines( wantFile ))
+         })
+
+         unlink( wantFile )
+      })
+      describe( "Works normally when (correct) checksum file already exists", {
+         describe( "With checkFile= <default> (and algo)", {
+            wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".sha256" ))
+            got1 <- expect_silent( saveFileSum( tempFile, algo="sha256" ))
+            got2 <- expect_silent( saveFileSum( tempFile, algo="sha256" ))
+
+            it( "Returns expected Sha256 sum", {
+               expect_equal( wantFile, got1 )
+               expect_equal( wantFile, got2 )
+            })
+            it( "Creates the expected sha256 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectSha256, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+         })
+         describe( "With checkFile= <specified>", {
+            wantFile <- tempfile( pattern = "expectMd5File" )
+            got1 <- expect_silent( saveFileSum( tempFile, checkFile= wantFile ))
+            got2 <- expect_silent( saveFileSum( tempFile, checkFile= wantFile ))
+
+            it( "Returns expected Md5 sum", {
+               expect_equal( wantFile, got1 )
+               expect_equal( wantFile, got2 )
+            })
+            it( "Creates the expected sha256 file", {
+               expect_true( file.exists( wantFile ))
+               expect_equal( expectMd5, readLines( wantFile ))
+            })
+
+            unlink( wantFile )
+         })
+      })
+      describe( "Error thrown if file not actually written", {
+         it ("throws an error", {
+            wantFile <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+            mockery::stub( saveFileSum, 'writeLines', FALSE )
+            wantRE <- "Something appears to have gone wrong" %pp%
+                      "writing the checkFile. Can't verify: \"" %p%
+                      wantFile %p% '".'
+            expect_error( saveFileSum( tempFile ), wantRE )
+         })
+      })
+   })
+})
+
+describe( "checkFileSum()", {
+   tempDir <- withr::local_tempdir( "test_checkFileSum" )
+   tempFile <- makeTempFile(
+      c( "Red Fish", "Blue Fish" ), tempDir= tempDir )
+
+   saveFileSum( tempFile )
+   guessFileMd5 <- file.path( tempDir, paste0( ".", basename(tempFile), ".md5" ))
+   saveFileSum( tempFile, algo= "sha256" )
+   guessFileSha256 <- file.path( tempDir,
+                                 paste0( ".", basename( tempFile ), ".sha256" ))
+
+   mismatchFile <- makeTempFile( c( "I do not like", "green eggs" ), tempDir= tempDir )
+   badMd5 <- file.path( tempDir, paste0( ".", basename(mismatchFile), ".md5" ))
+   file.copy( guessFileMd5, badMd5 )
+
+   noSuchFile <- tempfile( "noSuchFile" )
+
+   describe( "Default run", {
+      describe( "Implicit", {
+         it( "Returns true when MD5 sum matches", {
+            got <- expect_silent( checkFileSum( tempFile ))
+            expect_true( got )
+         })
+         it( "Returns true when sha512 sum matches with non-hidden (default) checkFile", {
+
+            saveFileSum( tempFile, algo= "sha512", show= TRUE )
+            wantFile <- file.path( tempDir, paste0( basename(tempFile), ".sha512" ))
+
+            got <- expect_silent( checkFileSum( tempFile ))
+            expect_true( got )
+         })
+
+      })
+      describe( "Explicit", {
+         it( "Returns true when MD5 sum matches", {
+            got <- expect_silent( checkFileSum( file= tempFile, algo= "md5",
+                                                checkFile= NULL, as= "test"))
+            expect_true( got )
+         })
+      })
+   })
+   describe( "checkFile= <specified>", {
+      checkFile <- tempfile( "theChecksum", tmpdir= tempDir )
+      saveFileSum( tempFile, checkFile= checkFile )
+
+      it( "Returns true when MD5 sum matches", {
+         got <- expect_silent( checkFileSum( file= tempFile, checkFile= checkFile))
+         expect_true( got )
+      })
+
+      unlink( checkFile )
+   })
+   describe( "algo=", {
+      describe( "with checkFile=NULL", {
+         it( "Returns true when sha256 sum matches", {
+            got <- expect_silent( checkFileSum( file= tempFile, algo= "sha256" ))
+            expect_true( got )
+         })
+      })
+      describe( "with checkFile=<specified>", {
+         checkFile <- tempfile( "theChecksum", tmpdir= tempDir )
+
+         it ("Returns empty when check succeeds", {
+            for (algo in c("md5", "sha1", "crc32", "sha256", "sha512")) {
+               checkSum <- digest::digest( object= tempFile, algo=algo, file= TRUE )
+               withr::with_connection( list(conn = file( checkFile, open="w" )), {
+                  writeLines( checkSum, conn )
+                  flush( conn )
+                  got <- expect_silent(
+                     checkFileSum( file= tempFile, checkFile= checkFile,
+                                   algo=algo, as= "check" ))
+                  expect_equal( got, "" )
+               })
+            }
+         })
+         unlink( checkFile )
+      })
+   })
+   describe( "as= for all results", {
+      mismatchFileMd5Sum <-
+         digest::digest( mismatchFile, algo="md5", file= TRUE )
+      checkFileContent <- readLines( badMd5 )
+      wantMissmatchRE <- paste0(
+         "\\*\\*Checksum 'md5' mismatch\\*\\*:\n",
+         "\tFrom the checkFile: '", checkFileContent, "' \\(", badMd5, "\\),\n",
+         "\tComputed: '", mismatchFileMd5Sum, "' \\(", mismatchFile, "\\)\\.\n"
+      )
+
+      describe( "as='test'", {
+         it( "Returns TRUE for match", {
+            expect_true( checkFileSum( tempFile, as= "test" ))
+         })
+         it( "Returns FALSE for mis-match", {
+            expect_false( checkFileSum( mismatchFile, as= "test" ))
+         })
+         it( "Returns NA for error", {
+            expect_true( is.na( checkFileSum( noSuchFile, as= "test" )))
+         })
+      })
+      describe( "as='check'", {
+         it( "Returns empty string for match", {
+            want <- ""
+            got <- checkFileSum( tempFile, algo="sha256", as= "check" )
+            expect_equal( got, want )
+         })
+         it( "Returns string with message for failed checksum.", {
+            got <- checkFileSum( mismatchFile, as= "check" )
+            expect_match( got, wantMissmatchRE )
+         })
+      })
+      describe( "as='message'", {
+         it( "Returns empty string for match", {
+            want <- ""
+            got <- checkFileSum( tempFile, algo="md5", as= "message" )
+            expect_equal( got, want )
+         })
+         it( "Signals message() for mismatch and returns it invisibly", {
+            expect_message( got <- checkFileSum( mismatchFile, as= "message" ), wantMissmatchRE )
+            expect_match( got, wantMissmatchRE )
+         })
+      })
+      describe( "as='warning'", {
+         it( "Returns empty string for match", {
+            want <- ""
+            got <- checkFileSum( tempFile, algo="md5", as= "warning" )
+            expect_equal( got, want )
+         })
+         it( "Signals warning() for mismatch (and returns it invisibly)", {
+            expect_warning( got <- checkFileSum( mismatchFile, as= "warning" ), wantMissmatchRE )
+            expect_match( got, wantMissmatchRE )
+         })
+      })
+      describe( "as='error'", {
+         it( "Returns empty string for match", {
+            want <- ""
+            got <- checkFileSum( tempFile, algo="md5", as= "stop" )
+            expect_equal( got, want )
+         })
+         it( "Halts with error for mismatch.", {
+            expect_error( checkFileSum( mismatchFile, as= "error" ), wantMissmatchRE )
+         })
+      })
+   })
+   describe( "Errors and corner cases", {
+      describe( "Missing files", {
+         it( "Reports on missing main file with as='check'", {
+            wantRE <- paste0(
+               "Can't find file: \"", noSuchFile, "\"\\.\n",
+               "Can't find a matching checksum file for: \"", noSuchFile, "\"\\."
+            )
+            got <- expect_silent( checkFileSum( noSuchFile, as= "check" ))
+            expect_match( got, wantRE )
+         })
+         it( "Reports and sends message with missing default check file with as='message'", {
+            fileWithoutCheckFile <- makeTempFile( "I have no mates" )
+            wantRE <- paste0(
+               "Can't find a matching checksum file for: \"", fileWithoutCheckFile, "\"\\."
+            )
+            expect_message( got <- checkFileSum( fileWithoutCheckFile, checkFile= NULL, as= "message" ),
+                            wantRE )
+            expect_match( got, wantRE )
+
+            unlink("fileWithoutCheckFile")
+         })
+         it( "Reports and sends warning with missing explicit check file with as='warning'", {
+            fileWithoutCheckFile <- makeTempFile( "I have no mates" )
+            wantRE <- paste0(
+               "Can't find specified checksum file: \"", noSuchFile, "\"\\."
+            )
+            expect_warning(
+               got <- checkFileSum( fileWithoutCheckFile, checkFile= noSuchFile, as= "warning" ),
+                            wantRE )
+            expect_match( got, wantRE )
+
+            unlink("fileWithoutCheckFile")
+         })
+      })
+      describe( "Handles initial hidden file", {
+
+         it( "Returns true when MD5 sum matches", {
+            hiddenFile <- tempfile( ".hidden", tmpdir= tempDir )
+            writeLines( c("one", "two"), hiddenFile )
+
+            # Works with hidden check file
+            wantFile <- paste0( hiddenFile, ".md5")
+            writeLines( digest::digest( hiddenFile , algo= "md5", file= TRUE), wantFile )
+            got <- expect_silent( checkFileSum( hiddenFile ))
+            expect_true( got )
+
+            # Also works with unhidden check file
+            wantUnhiddenFile <-
+               file.path( dirname( wantFile ), sub( "^\\.", "", basename( wantFile)))
+            expect_true( wantFile != wantUnhiddenFile )
+            unlink( wantFile )
+            writeLines( digest::digest( hiddenFile , algo= "md5", file= TRUE), wantUnhiddenFile )
+            got <- expect_silent( checkFileSum( hiddenFile ))
+            expect_true( got )
+
+            unlink( hiddenFile )
+            unlink( wantUnhiddenFile )
+         })
+      })
+   })
+
+   unlink( guessFileMd5 )
+   unlink( guessFileSha256 )
+   unlink( badMd5 )
+})

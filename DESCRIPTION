@@ -1,7 +1,7 @@
 Package: JefferysRUtils
 Type: Package
 Title: My bag of tricks for R coding
-Version: 0.0.12
+Version: 0.0.13
 Author: Stuart R. Jefferys
 Maintainer: Stuart R. Jefferys <srj@unc.edu>
 Description: A collection of utilities that I use in R code. Each is too small to
@@ -13,12 +13,16 @@ URL: http://github.com/jefferys/JefferysRUtils
 Imports:
    futile.logger,
    utils,
-   openssl
+   openssl,
+   digest
 Suggests:
     spelling,
-    testthat
-RoxygenNote: 7.2.3
+    testthat,
+    tools,
+    withr,
+    mockery
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
