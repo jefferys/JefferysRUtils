@@ -87,8 +87,6 @@ sha256 <- function( file, as.hash= FALSE ) {
 #' @return A boolean vector indicating if files match their
 #' provided SHA256 checksum hashes.
 #'
-#' @examples
-#'
 #' @export
 checkSha256 <- function( checksums=NULL, files= NULL, error= NA, ext=".sha256") {
 

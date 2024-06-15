@@ -13,7 +13,7 @@ URL: http://github.com/jefferys/JefferysRUtils
 Imports:
    futile.logger,
    utils,
-   openssl
+   openssl,
    digest
 Suggests:
     spelling,
